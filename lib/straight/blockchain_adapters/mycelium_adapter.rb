@@ -3,27 +3,35 @@ module Straight
 
     class MyceliumAdapter < Adapter
 
-      MAINNET_SERVERS = ["https://mws2.mycelium.com/wapi/wapi",
-                         "https://mws6.mycelium.com/wapi/wapi",
-                         "https://mws7.mycelium.com/wapi/wapi"]
-      TESTNET_SERVERS = ["https://node3.mycelium.com/wapitestnet/wapi"]
+      MAINNET_SERVERS     = %w{
+        https://mws2.mycelium.com/wapi/wapi
+        https://mws6.mycelium.com/wapi/wapi
+        https://mws7.mycelium.com/wapi/wapi
+      }
+      TESTNET_SERVERS     = %w{
+        https://node3.mycelium.com/wapitestnet/wapi
+      }
+      PINNED_CERTIFICATES = %w{
+        6afe0e9b6806fa4a49fc6818512014332953f30101dad7b91e76c14e073c3134
+      }.to_set
 
       def self.mainnet_adapter
-        instance = new
-        instance._initialize(MAINNET_SERVERS)
-        instance
+        new(testnet: false)
       end
-      
+
       def self.testnet_adapter
-        instance = new
-        instance._initialize(TESTNET_SERVERS)
-        instance
+        new(testnet: true)
       end
-      
-      def _initialize(servers)
+
+      def initialize(testnet: false)
         @latest_block = { cache_timestamp: nil, block: nil }
-        @api_servers = servers
+        @testnet = testnet
+        @api_servers = @testnet ? TESTNET_SERVERS : MAINNET_SERVERS
         set_base_url
+      end
+
+      def testnet?
+        @testnet
       end
 
       # Set url for API request.
@@ -84,8 +92,17 @@ module Straight
       private
 
         def api_request(method, params={})
+          ssl_opts =
+            if testnet?
+              {verify: false}
+            else
+              {verify_callback: lambda { |preverify_ok, store_context|
+                end_cert = store_context.chain[0] # pinned invalid certificate
+                PINNED_CERTIFICATES.include?(OpenSSL::Digest::SHA256.hexdigest(end_cert.to_der)) || preverify_ok
+              }}
+            end
           begin
-            conn = Faraday.new(url: "#{@base_url}/#{method}", ssl: { verify: false }) do |faraday|
+            conn = Faraday.new(url: "#{@base_url}/#{method}", ssl: ssl_opts) do |faraday|
               faraday.request  :url_encoded             # form-encode POST params
               faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
             end
