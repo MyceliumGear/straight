@@ -7,6 +7,7 @@ require 'yaml'
 require 'singleton'
 require 'httparty'
 require 'faraday'
+require_relative 'straight/faraday_monkeypatch'
 
 module Straight
   StraightError = Class.new(StandardError)
