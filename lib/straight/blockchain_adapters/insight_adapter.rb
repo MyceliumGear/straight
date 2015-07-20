@@ -49,7 +49,7 @@ module Straight
       rescue JSON::ParserError => e
         raise BitcoinAddressInvalid, message: "address in question: #{val}" if e.message.include?("Invalid address")
         raise RequestError, YAML::dump(e)
-      rescue Exception => e
+      rescue StandardError => e
         raise RequestError, YAML::dump(e)
       end
 
