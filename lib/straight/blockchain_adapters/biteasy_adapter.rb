@@ -46,7 +46,7 @@ module Straight
           JSON.parse(result.body)
         rescue JSON::ParserError => e
           raise RequestError, YAML::dump(e)
-        rescue Exception => e
+        rescue => e
           raise RequestError, YAML::dump(e)
         end
 

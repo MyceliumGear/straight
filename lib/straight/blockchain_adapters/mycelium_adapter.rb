@@ -111,10 +111,8 @@ module Straight
               req.headers['Content-Type'] = 'application/json'
             end
             JSON.parse(result.body || '')['r']
-          rescue JSON::ParserError => e
-            raise RequestError, YAML::dump(e)
-          rescue Exception => e
-            next_server ? retry : (raise e)
+          rescue => e
+            next_server ? retry : raise(RequestError, YAML::dump(e))
           end
         end
 

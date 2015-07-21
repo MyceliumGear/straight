@@ -59,30 +59,28 @@ RSpec.describe Straight::Blockchain::MyceliumAdapter do
     expect( -> { adapter.send(:api_request, "/a-404-request") }).to raise_error(Straight::Blockchain::Adapter::RequestError)
   end
 
-  # For now disable singleton instances for adapters
-  # it "uses the same Singleton instance" do
-  #   a = Straight::Blockchain::MyceliumAdapter.mainnet_adapter
-  #   b = Straight::Blockchain::MyceliumAdapter.mainnet_adapter
-  #   expect(a).to eq(b)
-  # end
-
   it "using next server if previous failed" do
-    block_response = double('Mycelium WAPI latest block response')
-    expect(Faraday).to receive(:new).once.and_raise(Exception)
-    begin
+    expect(Faraday).to receive(:new).at_least(2).times.and_raise(StandardError)
+    begin 
       adapter.send(:calculate_confirmations, 1)
-    rescue Exception
+    rescue
       expect(adapter.instance_variable_get(:@base_url)).to eq(Straight::Blockchain::MyceliumAdapter::MAINNET_SERVERS[2])
     end
   end
 
+  it "rescue from JSON parser error as StandardError" do
+    expect(Faraday).to receive(:new).at_least(3).times.and_raise(JSON::ParserError)
+    expect {
+      adapter.send(:calculate_confirmations, 1)
+    }.to raise_error(StandardError)
+  end
+
   it "raise errors if all servers failed" do
-    response_mock = double("Faraday Response Mock")
     latest_block_response = double('Mycelium WAPI latest block response')
-    expect(latest_block_response).to receive(:body).and_return('') 
+    expect(latest_block_response).to receive(:body).at_least(3).times.and_return('') 
     faraday_mock = double("Faraday Request Mock")
-    expect(faraday_mock).to receive(:post).and_return(latest_block_response)
-    expect(Faraday).to receive(:new).once.and_return(faraday_mock)
+    expect(faraday_mock).to receive(:post).at_least(3).and_return(latest_block_response)
+    expect(Faraday).to receive(:new).at_least(3).times.and_return(faraday_mock)
     expect {
       adapter.send(:calculate_confirmations, 1)
     }.to raise_error(Straight::Blockchain::Adapter::RequestError)
