@@ -63,7 +63,7 @@ RSpec.describe Straight::Blockchain::MyceliumAdapter do
     expect(Faraday).to receive(:new).at_least(2).times.and_raise(StandardError)
     begin 
       adapter.send(:calculate_confirmations, 1)
-    rescue StandardError
+    rescue
       expect(adapter.instance_variable_get(:@base_url)).to eq(Straight::Blockchain::MyceliumAdapter::MAINNET_SERVERS[2])
     end
   end
