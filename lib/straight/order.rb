@@ -189,7 +189,9 @@ module Straight
       # Recursion here! Keeps calling itself according to the schedule until
       # either the status changes or the schedule tells it to stop.
       def check_status_on_schedule(period: 10, iteration_index: 0, duration: 600, time_passed: 0)
+        status_reload_started = Time.now.to_f
         self.status(reload: true)
+        Straight.logger.info "Order #{id} has status #{@status}; checking took #{(-status_reload_started + Time.now.to_f).round(3)} seconds"
         time_passed += period
         if duration >= time_passed # Stop checking if status is >= 2
           if self.status < 2

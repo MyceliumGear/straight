@@ -1,3 +1,4 @@
+require 'logger'
 require 'btcruby'
 require 'satoshi-unit'
 require 'json'
@@ -11,6 +12,13 @@ require_relative 'straight/faraday_monkeypatch'
 
 module Straight
   StraightError = Class.new(StandardError)
+
+  class << self
+    attr_writer :logger
+    def logger
+      @logger ||= Logger.new('/dev/null')
+    end
+  end
 end
 
 require_relative 'straight/blockchain_adapter'
