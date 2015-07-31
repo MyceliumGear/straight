@@ -88,6 +88,3 @@ DEPENDENCIES
   satoshi-unit (~> 0.1)
   vcr
   webmock
-
-BUNDLED WITH
-   1.10.5
