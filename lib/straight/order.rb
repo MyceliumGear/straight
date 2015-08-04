@@ -191,7 +191,7 @@ module Straight
       def check_status_on_schedule(period: 10, iteration_index: 0, duration: 600, time_passed: 0)
         status_reload_started = Time.now.to_f
         self.status(reload: true)
-        Straight.logger.info "Order #{id} has status #{@status}; checking took #{(-status_reload_started + Time.now.to_f).round(3)} seconds"
+        Straight.logger.info "Order #{respond_to?(:id) ? id : object_id} has status #{@status}; checking took #{(-status_reload_started + Time.now.to_f).round(3)} seconds"
         time_passed += period
         if duration >= time_passed # Stop checking if status is >= 2
           if self.status < 2
