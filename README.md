@@ -1,7 +1,7 @@
 Straight
 ========
 
-[![Build Status](https://travis-ci.org/MyceliumGear/straight.svg)](https://travis-ci.org/MyceliumGear/straight)
+[![Build Status](https://travis-ci.org/MyceliumGear/straight.svg?branch=master)](https://travis-ci.org/MyceliumGear/straight)
 
 > Receive bitcoin payments directly into your wallet
 
