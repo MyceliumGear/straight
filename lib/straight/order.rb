@@ -118,9 +118,13 @@ module Straight
         return STATUSES[:unconfirmed] if status_unconfirmed?(t[:confirmations])
 
         set_amount_paid(t)
-        if t[:total_amount] == amount
+        define_status(t[:total_amount], amount)
+      end
+
+      def define_status(total_amount, amount)
+        if total_amount == amount
           STATUSES[:paid]
-        elsif t[:total_amount] < amount
+        elsif total_amount < amount
           STATUSES[:underpaid]
         else
           STATUSES[:overpaid]
