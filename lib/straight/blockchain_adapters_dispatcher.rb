@@ -1,15 +1,17 @@
 module Straight
+
+  # Employs many adapters and runs requests simultaneously.
+  # How many adapters are employed is determined by STEP.
+  # If all adapters fail it raises an exception.
   class BlockchainAdaptersDispatcher
-    # It calls to many adapters simultaneously. How much adapters determines in STEP constant.
-    # If all adapters fails it raise last exception.
 
     STEP = 2
     attr_reader :list_position, :adapters, :result, :step
 
     def initialize(adapters, &block)
       @list_position = 0
-      @result = nil
-      @step = 0
+      @result        = nil
+      @step          = 0
       @adapters = adapters
       run_requests(block) if block_given?
     end

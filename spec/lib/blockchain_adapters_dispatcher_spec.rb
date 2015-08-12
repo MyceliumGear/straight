@@ -7,18 +7,18 @@ RSpec.describe Straight::BlockchainAdaptersDispatcher do
                  Straight::Blockchain::BiteasyAdapter]
   end
 
-  it "should get adapters according config number - STEP" do
+  it "gets adapters according config number - STEP" do
     dispatcher = Straight::BlockchainAdaptersDispatcher.new(@adapters)
     expect(dispatcher.get_adapters.size).to eq(2)
   end
 
-  it "should increase #list_position on STEP" do
+  it "increases #list_position on STEP" do
     dispatcher = Straight::BlockchainAdaptersDispatcher.new(@adapters)
     dispatcher.get_adapters
     expect(dispatcher.list_position).to eq(2)
   end
 
-  it "set #step according to size of adapters" do
+  it "sets #step according to size of adapters" do
     dispatcher = Straight::BlockchainAdaptersDispatcher.new(@adapters)
     2.times { dispatcher.get_adapters }
     expect(dispatcher.step).to eq(1)
