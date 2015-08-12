@@ -14,6 +14,7 @@ module Straight
 end
 
 require_relative 'straight/blockchain_adapter'
+require_relative 'straight/blockchain_adapters_dispatcher'
 require_relative 'straight/blockchain_adapters/blockchain_info_adapter'
 require_relative 'straight/blockchain_adapters/biteasy_adapter'
 require_relative 'straight/blockchain_adapters/mycelium_adapter'
