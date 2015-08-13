@@ -29,7 +29,7 @@ RSpec.describe Straight::Gateway do
 
   it "passes methods on to the available adapter" do
     @gateway.instance_variable_set('@blockchain_adapters', [@mock_adapter])
-    expect(@mock_adapter).to receive(:fetch_transaction).once 
+    expect(@mock_adapter).to receive(:fetch_transaction).once.and_return(true)
     @gateway.fetch_transaction("xxx")
   end
 
@@ -37,7 +37,7 @@ RSpec.describe Straight::Gateway do
     another_mock_adapter = double("another_mock blockchain adapter")
     @gateway.instance_variable_set('@blockchain_adapters', [@mock_adapter, another_mock_adapter])
     allow(@mock_adapter).to receive(:fetch_transaction).once.and_raise(Straight::StraightError)
-    expect(another_mock_adapter).to receive(:fetch_transaction).once 
+    expect(another_mock_adapter).to receive(:fetch_transaction).once.and_return(true)
     @gateway.fetch_transaction("xxx")
   end
 
