@@ -8,10 +8,7 @@ require 'singleton'
 require 'httparty'
 require 'faraday'
 require_relative 'straight/faraday_monkeypatch'
-
-module Straight
-  StraightError = Class.new(StandardError)
-end
+require_relative 'straight/errors'
 
 require_relative 'straight/blockchain_adapter'
 require_relative 'straight/blockchain_adapters_dispatcher'
@@ -19,6 +16,7 @@ require_relative 'straight/blockchain_adapters/blockchain_info_adapter'
 require_relative 'straight/blockchain_adapters/biteasy_adapter'
 require_relative 'straight/blockchain_adapters/mycelium_adapter'
 require_relative 'straight/blockchain_adapters/insight_adapter'
+require_relative 'straight/blockchain_adapters/chain_com_adapter'
 
 require_relative 'straight/exchange_rate_adapter'
 require_relative 'straight/exchange_rate_adapters/bitpay_adapter'

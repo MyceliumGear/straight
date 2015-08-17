@@ -217,7 +217,8 @@ module Straight
       @blockchain_adapters = [
         Blockchain::BlockchainInfoAdapter.mainnet_adapter,
         Blockchain::MyceliumAdapter.mainnet_adapter,
-        Blockchain::InsightAdapter.mainnet_adapter(main_url: "https://insight.mycelium.com/api")
+        Blockchain::InsightAdapter.mainnet_adapter(main_url: "https://insight.mycelium.com/api"),
+        Blockchain::ChainComAdapter.mainnet_adapter(api_key_id: '')
       ]
       @exchange_rate_adapters = [
         ExchangeRate::BitpayAdapter.instance, 
