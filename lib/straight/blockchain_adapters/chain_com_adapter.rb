@@ -3,23 +3,21 @@ module Straight
 
     class ChainComAdapter < Adapter
 
+      MAINNET_BASE_URL = 'https://api.chain.com/v2/bitcoin'
+      TESTNET_BASE_URL = 'https://api.chain.com/v2/testnet3'
+
       def self.mainnet_adapter(api_key_id:)
-        instance = self.instance
-        instance._initialize('https://api.chain.com/v2/bitcoin', api_key_id)
-        instance
+        new(api_key_id)
       end
 
       def self.testnet_adapter(api_key_id:)
-        instance = self.instance
-        instance._initialize('https://api.chain.com/v2/testnet3', api_key_id)
-        instance
+        new(api_key_id, testnet: true)
       end
 
-      def _initialize(base_url, api_key_id)
-        raise ChainComAdapterBaseUrlError if base_url.nil?
+      def initialize(api_key_id, options = {})
         raise ChainComAdapterApiKeyIdError if api_key_id.nil?
 
-        @base_url = base_url
+        @base_url = options[:testnet] ? TESTNET_BASE_URL : MAINNET_BASE_URL
         @api_key_id = api_key_id
       end
 
@@ -42,7 +40,7 @@ module Straight
       private
 
       def api_request(url)
-        conn = Faraday.new("#{@base_url}/#{url}?api-key-id=#{@api_key_id}", ssl: { verify: false }) do |faraday|
+        conn = Faraday.new("#{@base_url}/#{url}?api-key-id=#{@api_key_id}") do |faraday|
           faraday.adapter Faraday.default_adapter
         end
         result = conn.get

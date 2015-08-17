@@ -51,12 +51,6 @@ RSpec.describe Straight::Blockchain::ChainComAdapter do
       )
     end
 
-    it "uses the same Singleton instance" do
-      a = Straight::Blockchain::ChainComAdapter.mainnet_adapter(api_key_id: 'e9868197f9a319dae135e01fba07cfcc')
-      b = Straight::Blockchain::ChainComAdapter.mainnet_adapter(api_key_id: 'e9868197f9a319dae135e01fba07cfcc')
-      expect(a).to eq(b)
-    end
-
     it 'raises an exception when sent wrong API key id' do
       expect( -> { Straight::Blockchain::ChainComAdapter.mainnet_adapter(api_key_id: nil) }).to (
         raise_error(Straight::Blockchain::ChainComAdapterApiKeyIdError)
@@ -104,12 +98,6 @@ RSpec.describe Straight::Blockchain::ChainComAdapter do
       expect( -> { adapter.send(:api_request, "/a-404-request") }).to (
         raise_error(Straight::Blockchain::Adapter::RequestError)
       )
-    end
-
-    it "uses the same Singleton instance" do
-      a = Straight::Blockchain::ChainComAdapter.testnet_adapter(api_key_id: 'e9868197f9a319dae135e01fba07cfcc')
-      b = Straight::Blockchain::ChainComAdapter.testnet_adapter(api_key_id: 'e9868197f9a319dae135e01fba07cfcc')
-      expect(a).to eq(b)
     end
 
     it 'raises an exception when sent wrong API key id' do
