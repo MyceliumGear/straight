@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["Roman Snitko"]
-  s.date = "2015-08-14"
+  s.date = "2015-08-17"
   s.description = "An engine for the Straight payment gateway software. Requires no state to be saved (that is, no storage or DB). Its responsibilities only include processing data coming from an actual gateway."
   s.email = "roman.snitko@gmail.com"
   s.extra_rdoc_files = [
@@ -34,10 +34,11 @@ Gem::Specification.new do |s|
     "lib/straight/blockchain_adapter.rb",
     "lib/straight/blockchain_adapters/biteasy_adapter.rb",
     "lib/straight/blockchain_adapters/blockchain_info_adapter.rb",
+    "lib/straight/blockchain_adapters/chain_com_adapter.rb",
     "lib/straight/blockchain_adapters/insight_adapter.rb",
     "lib/straight/blockchain_adapters/mycelium_adapter.rb",
-    "lib/straight/blockchain_adapters/chain_com_adapter.rb",
     "lib/straight/blockchain_adapters_dispatcher.rb",
+    "lib/straight/errors.rb",
     "lib/straight/exchange_rate_adapter.rb",
     "lib/straight/exchange_rate_adapters/average_rate_adapter.rb",
     "lib/straight/exchange_rate_adapters/bitpay_adapter.rb",
