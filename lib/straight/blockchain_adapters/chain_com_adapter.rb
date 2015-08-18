@@ -7,17 +7,17 @@ module Straight
       TESTNET_BASE_URL = 'https://api.chain.com/v2/testnet3'
 
       def self.mainnet_adapter(api_key_id:)
-        new(api_key_id)
+        new(api_key_id: api_key_id)
       end
 
       def self.testnet_adapter(api_key_id:)
-        new(api_key_id, testnet: true)
+        new(api_key_id: api_key_id, testnet: true)
       end
 
-      def initialize(api_key_id, options = {})
+      def initialize(api_key_id:, testnet: false)
         raise ChainComAdapterApiKeyIdError if api_key_id.nil?
 
-        @base_url = options[:testnet] ? TESTNET_BASE_URL : MAINNET_BASE_URL
+        @base_url = testnet ? TESTNET_BASE_URL : MAINNET_BASE_URL
         @api_key_id = api_key_id
       end
 
@@ -48,8 +48,6 @@ module Straight
           raise RequestError, "Cannot access remote API, response code was #{result.code}"
         end
         JSON.parse(result.body)
-      rescue JSON::ParserError => e
-        raise RequestError, YAML::dump(e)
       rescue => e
         raise RequestError, YAML::dump(e)
       end

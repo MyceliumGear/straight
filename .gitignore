@@ -5,3 +5,6 @@ pkg
 
 .DS_Store
 .ruby-version
+
+# Ignore IDE
+.idea/
