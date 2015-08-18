@@ -1,24 +1,24 @@
 module Straight
 
   # Employs many adapters and runs requests simultaneously.
-  # How many adapters are employed is determined by STEP.
+  # How many adapters are employed is determined by var passed to #initializer (default 2).
   # If all adapters fail it raises an exception.
   class BlockchainAdaptersDispatcher
 
-    STEP = 2
     TIMEOUT = 60
-    attr_reader :list_position, :adapters, :result, :defer_result, :step
+    attr_reader :list_position, :adapters, :result, :defer_result, :step, :tasks_parallel_limit
 
-    def initialize(adapters, &block)
-      @list_position = 0
-      @defer_result  = Concurrent::IVar.new
-      @step          = 0
-      @adapters      = adapters
+    def initialize(adapters, tasks_parallel_limit: 2, &block)
+      @list_position        = 0
+      @defer_result         = Concurrent::IVar.new
+      @tasks_parallel_limit = tasks_parallel_limit
+      @step                 = 0
+      @adapters             = adapters
       run_requests(block) if block_given?
     end
 
     def get_adapters
-      @step = [adapters.size - @list_position, STEP].min
+      @step = [adapters.size - @list_position, @tasks_parallel_limit].min
       adapters = @adapters[@list_position...@list_position+@step]
       @list_position += @step
       adapters
