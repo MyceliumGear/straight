@@ -6,55 +6,59 @@ module Straight
   class BlockchainAdaptersDispatcher
 
     STEP = 2
-    attr_reader :list_position, :adapters, :result, :step
+    TIMEOUT = 60
+    attr_reader :list_position, :adapters, :result, :defer_result, :step
 
     def initialize(adapters, &block)
       @list_position = 0
-      @result        = nil
+      @defer_result  = Concurrent::IVar.new
       @step          = 0
-      @adapters = adapters
+      @adapters      = adapters
       run_requests(block) if block_given?
     end
 
     def get_adapters
       @step = [adapters.size - @list_position, STEP].min
-      adapters = @adapters[@list_position..@step-1]
+      adapters = @adapters[@list_position...@list_position+@step]
       @list_position += @step
       adapters
     end
 
     def run_requests(block)
-      threads = []
-      fault_counter = 0
-      get_adapters.each do |adapter| 
-        t = Thread.new do
-          block.call(adapter)
+      execute_in_parallel(block, get_adapters)
+      Timeout::timeout(TIMEOUT) {
+        @result = @defer_result.wait.value
+      }
+    rescue TimeoutError     # explicit message for timeout
+      raise TimeoutError.new("Timeout in #{TIMEOUT} seconds exceeded, please check network")
+    end
+    
+  private
+
+    def execute_in_parallel(block, adapters)
+      attempts = Concurrent::MVar.new(0)
+      pool = Concurrent::ThreadPoolExecutor.new
+      adapters.each do |adapter|
+        p = Concurrent::Promise.new(executor: pool) { block.call(adapter) }
+        p.then do |result|
+          @defer_result.set(result)
+          pool.kill
         end
-        t.abort_on_exception = true
-        threads << t
+        p.rescue do |reason|
+          raise reason if finish_iteration?(attempts) && reached_last_adapter?
+          attempts.modify { |v| v+1 }
+          execute_in_parallel(block, get_adapters) if finish_iteration?(attempts)
+        end
+        p.execute
       end
-      wait_values(threads)
-    rescue => e
-      raise e if fault_counter == @step && @list_position == @adapters.size
-      if fault_counter == @step 
-        fault_counter = 0
-        retry
-      end
-      fault_counter += 1
     end
 
-    def wait_values(threads)
-      threads.each do |t| 
-        Thread.new do
-          if val = t.value
-            @result = val
-            threads.map(&:kill)
-          end
-        end
-      end
-      loop { break if @result }
-      @result
+    def finish_iteration?(attempts)
+      attempts.value == @step
     end
 
+    def reached_last_adapter?
+      @list_position == @adapter.size
+    end
   end
 end

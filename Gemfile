@@ -6,6 +6,7 @@ gem 'btcruby', '~> 1.0'
 gem 'satoshi-unit', '~> 0.1'
 gem 'httparty', '~> 0.13.5'
 gem 'faraday'
+gem 'concurrent-ruby'
 
 group :development do
   gem "bundler", "~> 1.0"
