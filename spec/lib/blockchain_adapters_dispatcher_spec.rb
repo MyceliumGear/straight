@@ -11,18 +11,18 @@ RSpec.describe Straight::BlockchainAdaptersDispatcher do
 
   it "gets adapters according config number - STEP" do
     dispatcher = Straight::BlockchainAdaptersDispatcher.new(@adapters)
-    expect(dispatcher.get_adapters.size).to eq(2)
+    expect(dispatcher.send('get_adapters').size).to eq(2)
   end
 
   it "increases #list_position on STEP" do
     dispatcher = Straight::BlockchainAdaptersDispatcher.new(@adapters)
-    dispatcher.get_adapters
+    dispatcher.send('get_adapters')
     expect(dispatcher.list_position).to eq(2)
   end
 
   it "sets #step according to size of adapters" do
     dispatcher = Straight::BlockchainAdaptersDispatcher.new(@adapters)
-    2.times { dispatcher.get_adapters }
+    2.times { dispatcher.send('get_adapters') }
     expect(dispatcher.step).to eq(1)
   end
 
@@ -49,6 +49,15 @@ RSpec.describe Straight::BlockchainAdaptersDispatcher do
     expect {
       Straight::BlockchainAdaptersDispatcher.new(@adapters) { |b| b.fetch_transaction("123") }
     }.to raise_error(Straight::BlockchainAdaptersDispatcher::AdaptersTimeoutError)
+  end
+
+  it "raise AdaptersError when all adapters fails" do
+    allow(@adapters[0]).to receive(:fetch_transaction).and_raise(StandardError)
+    allow(@adapters[1]).to receive(:fetch_transaction).and_raise(StandardError)
+    allow(@adapters[2]).to receive(:fetch_transaction).and_raise(StandardError)
+    expect {
+      Straight::BlockchainAdaptersDispatcher.new(@adapters) { |b| b.fetch_transaction("123") }
+    }.to raise_error(Straight::BlockchainAdaptersDispatcher::AdaptersError)
   end
   
 end

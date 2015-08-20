@@ -20,17 +20,11 @@ module Straight
       run_requests(block) if block_given?
     end
 
-    def get_adapters
-      @step = [adapters.size - @list_position, @tasks_parallel_limit].min
-      adapters = @adapters[@list_position...@list_position+@step]
-      @list_position += @step
-      adapters
-    end
-
     def run_requests(block)
       execute_in_parallel(block, get_adapters)
-      Timeout::timeout(TIMEOUT, AdaptersTimeoutError) {
+      Timeout.timeout(TIMEOUT, AdaptersTimeoutError) {
         @result = @defer_result.wait.value
+        raise @defer_result.reason if @defer_result.rejected?
       }
     end
     
@@ -48,12 +42,23 @@ module Straight
         end
         p.rescue do |reason|
           # Straight.logger "[Straight] Adapter #{adapter} got error: #{reason}"
-          raise AdaptersError if finish_iteration?(attempts) && reached_last_adapter?
           attempts.modify { |v| v+1 }
+          @defer_result.fail(AdaptersError) if finish_iteration?(attempts) && reached_last_adapter?
           execute_in_parallel(block, get_adapters) if finish_iteration?(attempts)
         end
         p.execute
       end
+    end
+
+    # Gets specific(@tasks_parallel_limit) quantity of adapters from array of all adapters.
+    # Each invocation recalculates position where we're in an array (@list_position)
+    # and wich step was used (@step).
+    # @return [Array] of adapters for current step 
+    def get_adapters
+      @step = [adapters.size - @list_position, @tasks_parallel_limit].min
+      adapters = @adapters[@list_position...@list_position+@step]
+      @list_position += @step
+      adapters
     end
 
     def finish_iteration?(attempts)
@@ -61,7 +66,7 @@ module Straight
     end
 
     def reached_last_adapter?
-      @list_position == @adapter.size
+      @list_position == @adapters.size
     end
   end
 end
