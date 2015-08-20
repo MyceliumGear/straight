@@ -48,7 +48,7 @@ RSpec.describe Straight::BlockchainAdaptersDispatcher do
     Straight::BlockchainAdaptersDispatcher.const_set("TIMEOUT", 0.01)
     expect {
       Straight::BlockchainAdaptersDispatcher.new(@adapters) { |b| b.fetch_transaction("123") }
-    }.to raise_error(TimeoutError)
+    }.to raise_error(Straight::BlockchainAdaptersDispatcher::AdaptersTimeoutError)
   end
   
 end

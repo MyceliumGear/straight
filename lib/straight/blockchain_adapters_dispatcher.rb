@@ -5,6 +5,8 @@ module Straight
   # If all adapters fail it raises an exception.
   class BlockchainAdaptersDispatcher
 
+    class AdaptersTimeoutError < TimeoutError; end
+
     TIMEOUT = 60
     attr_reader :list_position, :adapters, :result, :defer_result, :step, :tasks_parallel_limit
 
@@ -26,11 +28,9 @@ module Straight
 
     def run_requests(block)
       execute_in_parallel(block, get_adapters)
-      Timeout::timeout(TIMEOUT) {
+      Timeout::timeout(TIMEOUT, AdaptersTimeoutError) {
         @result = @defer_result.wait.value
       }
-    rescue TimeoutError     # explicit message for timeout
-      raise TimeoutError.new("Timeout in #{TIMEOUT} seconds exceeded, please check network")
     end
     
   private
