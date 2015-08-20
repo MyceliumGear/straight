@@ -6,6 +6,7 @@ module Straight
   class BlockchainAdaptersDispatcher
 
     class AdaptersTimeoutError < TimeoutError; end
+    class AdaptersError < StandardError; end
 
     TIMEOUT = 60
     attr_reader :list_position, :adapters, :result, :defer_result, :step, :tasks_parallel_limit
@@ -40,12 +41,14 @@ module Straight
       pool = Concurrent::ThreadPoolExecutor.new
       adapters.each do |adapter|
         p = Concurrent::Promise.new(executor: pool) { block.call(adapter) }
-        p.then do |result|
+        p.on_success do |result|
+          # Straight.logger "[Straight] Adapter #{adapter} has received result: #{result}"
           @defer_result.set(result)
           pool.kill
         end
         p.rescue do |reason|
-          raise reason if finish_iteration?(attempts) && reached_last_adapter?
+          # Straight.logger "[Straight] Adapter #{adapter} got error: #{reason}"
+          raise AdaptersError if finish_iteration?(attempts) && reached_last_adapter?
           attempts.modify { |v| v+1 }
           execute_in_parallel(block, get_adapters) if finish_iteration?(attempts)
         end
