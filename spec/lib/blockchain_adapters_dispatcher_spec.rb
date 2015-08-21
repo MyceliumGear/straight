@@ -9,23 +9,6 @@ RSpec.describe Straight::BlockchainAdaptersDispatcher do
 
   after(:each) { @adapters = nil }
 
-  it "gets adapters according config number - STEP" do
-    dispatcher = Straight::BlockchainAdaptersDispatcher.new(@adapters)
-    expect(dispatcher.send('get_adapters').size).to eq(2)
-  end
-
-  it "increases #list_position on STEP" do
-    dispatcher = Straight::BlockchainAdaptersDispatcher.new(@adapters)
-    dispatcher.send('get_adapters')
-    expect(dispatcher.list_position).to eq(2)
-  end
-
-  it "sets #step according to size of adapters" do
-    dispatcher = Straight::BlockchainAdaptersDispatcher.new(@adapters)
-    2.times { dispatcher.send('get_adapters') }
-    expect(dispatcher.step).to eq(1)
-  end
-
   it "returns value from second adapter" do
     return_result = "qwer"
     expect(@adapters[0]).to receive(:fetch_transaction).once.and_raise(StandardError)

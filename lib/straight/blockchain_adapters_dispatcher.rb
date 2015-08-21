@@ -6,67 +6,46 @@ module Straight
   class BlockchainAdaptersDispatcher
 
     class AdaptersTimeoutError < TimeoutError; end
-    class AdaptersError < StandardError; end
+    class AdaptersError < StraightError; end
 
     TIMEOUT = 60
-    attr_reader :list_position, :adapters, :result, :defer_result, :step, :tasks_parallel_limit
+    attr_reader :adapters, :result, :defer_result, :tasks_parallel_limit
 
     def initialize(adapters, tasks_parallel_limit: 2, &block)
-      @list_position        = 0
       @defer_result         = Concurrent::IVar.new
       @tasks_parallel_limit = tasks_parallel_limit
-      @step                 = 0
       @adapters             = adapters
-      run_requests(block) if block_given?
+      @result               = run_requests(block) if block_given?
     end
 
     def run_requests(block)
-      execute_in_parallel(block, get_adapters)
-      Timeout.timeout(TIMEOUT, AdaptersTimeoutError) {
-        @result = @defer_result.wait.value
+      execute_in_parallel(block, @adapters.dup)
+      Timeout.timeout(TIMEOUT, AdaptersTimeoutError) do
+        @defer_result.wait
         raise @defer_result.reason if @defer_result.rejected?
-      }
+        @defer_result.value
+      end
     end
     
   private
 
     def execute_in_parallel(block, adapters)
-      attempts = Concurrent::MVar.new(0)
-      pool = Concurrent::ThreadPoolExecutor.new
-      adapters.each do |adapter|
+      adapters_to_run  = adapters.shift(@tasks_parallel_limit)
+      attempts_counter = Concurrent::MVar.new(adapters_to_run.size)
+      pool             = Concurrent::ThreadPoolExecutor.new
+      adapters_to_run.each do |adapter|
         p = Concurrent::Promise.new(executor: pool) { block.call(adapter) }
         p.on_success do |result|
-          # Straight.logger "[Straight] Adapter #{adapter} has received result: #{result}"
           @defer_result.set(result)
           pool.kill
         end
         p.rescue do |reason|
-          # Straight.logger "[Straight] Adapter #{adapter} got error: #{reason}"
-          attempts.modify { |v| v+1 }
-          @defer_result.fail(AdaptersError) if finish_iteration?(attempts) && reached_last_adapter?
-          execute_in_parallel(block, get_adapters) if finish_iteration?(attempts)
+          attempts_counter.modify { |v| v-1 }
+          @defer_result.fail(AdaptersError) if attempts_counter.value.zero? && adapters.empty?
+          execute_in_parallel(block, adapters) if attempts_counter.value.zero?
         end
         p.execute
       end
-    end
-
-    # Gets specific(@tasks_parallel_limit) quantity of adapters from array of all adapters.
-    # Each invocation recalculates position where we're in an array (@list_position)
-    # and wich step was used (@step).
-    # @return [Array] of adapters for current step 
-    def get_adapters
-      @step = [adapters.size - @list_position, @tasks_parallel_limit].min
-      adapters = @adapters[@list_position...@list_position+@step]
-      @list_position += @step
-      adapters
-    end
-
-    def finish_iteration?(attempts)
-      attempts.value == @step
-    end
-
-    def reached_last_adapter?
-      @list_position == @adapters.size
     end
   end
 end
