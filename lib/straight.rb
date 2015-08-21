@@ -7,6 +7,7 @@ require 'yaml'
 require 'singleton'
 require 'httparty'
 require 'faraday'
+require 'concurrent'
 require_relative 'straight/faraday_monkeypatch'
 require_relative 'straight/errors'
 

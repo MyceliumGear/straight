@@ -1,60 +1,51 @@
 module Straight
 
   # Employs many adapters and runs requests simultaneously.
-  # How many adapters are employed is determined by STEP.
+  # How many adapters are employed is determined by var passed to #initializer (default 2).
   # If all adapters fail it raises an exception.
   class BlockchainAdaptersDispatcher
 
-    STEP = 2
-    attr_reader :list_position, :adapters, :result, :step
+    class AdaptersTimeoutError < TimeoutError; end
+    class AdaptersError < StraightError; end
 
-    def initialize(adapters, &block)
-      @list_position = 0
-      @result        = nil
-      @step          = 0
-      @adapters = adapters
-      run_requests(block) if block_given?
-    end
+    TIMEOUT = 60
+    attr_reader :adapters, :result, :defer_result, :tasks_parallel_limit
 
-    def get_adapters
-      @step = [adapters.size - @list_position, STEP].min
-      adapters = @adapters[@list_position..@step-1]
-      @list_position += @step
-      adapters
+    def initialize(adapters, tasks_parallel_limit: 2, &block)
+      @defer_result         = Concurrent::IVar.new
+      @tasks_parallel_limit = tasks_parallel_limit
+      @adapters             = adapters
+      @result               = run_requests(block) if block_given?
     end
 
     def run_requests(block)
-      threads = []
-      fault_counter = 0
-      get_adapters.each do |adapter| 
-        t = Thread.new do
-          block.call(adapter)
-        end
-        t.abort_on_exception = true
-        threads << t
+      execute_in_parallel(block, @adapters.dup)
+      Timeout.timeout(TIMEOUT, AdaptersTimeoutError) do
+        @defer_result.wait
+        raise @defer_result.reason if @defer_result.rejected?
+        @defer_result.value
       end
-      wait_values(threads)
-    rescue => e
-      raise e if fault_counter == @step && @list_position == @adapters.size
-      if fault_counter == @step 
-        fault_counter = 0
-        retry
-      end
-      fault_counter += 1
     end
+    
+  private
 
-    def wait_values(threads)
-      threads.each do |t| 
-        Thread.new do
-          if val = t.value
-            @result = val
-            threads.map(&:kill)
-          end
+    def execute_in_parallel(block, adapters)
+      adapters_to_run  = adapters.shift(@tasks_parallel_limit)
+      attempts_counter = Concurrent::MVar.new(adapters_to_run.size)
+      pool             = Concurrent::ThreadPoolExecutor.new
+      adapters_to_run.each do |adapter|
+        p = Concurrent::Promise.new(executor: pool) { block.call(adapter) }
+        p.on_success do |result|
+          @defer_result.set(result)
+          pool.kill
         end
+        p.rescue do |reason|
+          attempts_counter.modify { |v| v-1 }
+          @defer_result.fail(AdaptersError) if attempts_counter.value.zero? && adapters.empty?
+          execute_in_parallel(block, adapters) if attempts_counter.value.zero?
+        end
+        p.execute
       end
-      loop { break if @result }
-      @result
     end
-
   end
 end
