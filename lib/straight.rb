@@ -8,11 +8,11 @@ require 'yaml'
 require 'singleton'
 require 'httparty'
 require 'faraday'
+require 'concurrent'
 require_relative 'straight/faraday_monkeypatch'
+require_relative 'straight/errors'
 
 module Straight
-  StraightError = Class.new(StandardError)
-
   class << self
     attr_writer :logger
     def logger
@@ -27,6 +27,7 @@ require_relative 'straight/blockchain_adapters/blockchain_info_adapter'
 require_relative 'straight/blockchain_adapters/biteasy_adapter'
 require_relative 'straight/blockchain_adapters/mycelium_adapter'
 require_relative 'straight/blockchain_adapters/insight_adapter'
+require_relative 'straight/blockchain_adapters/chain_com_adapter'
 
 require_relative 'straight/exchange_rate_adapter'
 require_relative 'straight/exchange_rate_adapters/bitpay_adapter'

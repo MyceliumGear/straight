@@ -5,6 +5,7 @@ GEM
     btcruby (1.0.3)
       ffi (~> 1.9, >= 1.9.3)
     builder (3.2.2)
+    concurrent-ruby (0.9.1)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
     descendants_tracker (0.0.4)
@@ -80,6 +81,7 @@ PLATFORMS
 DEPENDENCIES
   btcruby (~> 1.0)
   bundler (~> 1.0)
+  concurrent-ruby
   faraday
   github_api (= 0.11.3)
   httparty (~> 0.13.5)
@@ -88,3 +90,6 @@ DEPENDENCIES
   satoshi-unit (~> 0.1)
   vcr
   webmock
+
+BUNDLED WITH
+   1.10.4
