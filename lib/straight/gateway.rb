@@ -188,7 +188,7 @@ module Straight
           raise NoAdaptersAvailable, "the list of #{type} adapters is empty or nil" if adapters.nil? || adapters.empty?
 
           last_exception = nil
-          adapters.each do |adapter|
+          adapters.each_with_index do |adapter, index|
             begin
               result = yield(adapter)
               last_exception = nil
@@ -196,8 +196,11 @@ module Straight
             rescue => e
               raise e if raise_exceptions.include?(e)
               last_exception = e
-              # If an Exception is raised, it passes on
-              # to the next adapter and attempts to call a method on it.
+              # let's not log error for the last adapter, it will be re-raised anyway
+              unless index == adapters.size - 1
+                Straight.logger.error "Adapter #{adapter.inspect} failed with #{e.inspect}:\n#{e.backtrace.join("\n")}"
+              end
+              # If an exception wasn't re-raised, it passes on to the next adapter and attempts to call a method on it
             end
           end
           raise last_exception if last_exception

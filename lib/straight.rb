@@ -1,3 +1,4 @@
+require 'logger'
 require 'btcruby'
 require 'satoshi-unit'
 require 'json'
@@ -10,6 +11,15 @@ require 'faraday'
 require 'concurrent'
 require_relative 'straight/faraday_monkeypatch'
 require_relative 'straight/errors'
+
+module Straight
+  class << self
+    attr_writer :logger
+    def logger
+      @logger ||= Logger.new('/dev/null')
+    end
+  end
+end
 
 require_relative 'straight/blockchain_adapter'
 require_relative 'straight/blockchain_adapters_dispatcher'
