@@ -94,10 +94,8 @@ module Straight
         # This is just a caching workaround so we don't query
         # the blockchain needlessly. The actual safety switch is in the setter.
         if (reload || @status.nil?) && !status_locked?
-          result                     = get_transaction_status(reload: reload)
-          self.accepted_transactions = result[:transactions]
-          self.amount_paid           = result[:amount_paid]
-          self.status                = result[:status]
+          result = get_transaction_status(reload: reload)
+          result.each { |k, v| send :"#{k}=", v }
         end
 
         as_sym ? STATUSES.invert[@status] : @status
@@ -122,15 +120,15 @@ module Straight
         super if defined?(super)
       end
 
-      def get_transaction_status(reload: false)
-        transactions =
+      def get_transaction_status(reload: false, transactions: nil)
+        transactions ||=
           if block_height_created_at.to_i > 0
             transactions_since(reload: reload)
           else
             [transaction(reload: reload)]
           end.compact
 
-        amount_paid = transactions.map { |t| t.fetch(:total_amount) }.reduce(:+) || 0
+        amount_paid = transactions.map { |t| t.amount }.reduce(:+) || 0
 
         status =
           if transactions.empty?
@@ -145,11 +143,11 @@ module Straight
             STATUSES.fetch(:overpaid)
           end
 
-        {status: status, amount_paid: amount_paid, transactions: transactions}
+        {amount_paid: amount_paid, accepted_transactions: transactions, status: status}
       end
 
       def status_unconfirmed?(transactions)
-        transactions.map { |t| t.fetch(:confirmations) }.min < gateway.confirmations_required
+        transactions.map { |t| t.confirmations }.compact.min.to_i < gateway.confirmations_required
       end
 
       def status_locked?
@@ -175,8 +173,10 @@ module Straight
       # For compliance, there's also a #transaction method which always returns
       # the last transaction made to the address.
       def transactions(reload: false)
-        @transactions = gateway.fetch_transactions_for(address) if reload || !@transactions
-        @transactions
+        @transactions = nil if reload
+        @transactions ||= begin
+          Straight::Transaction.from_hashes gateway.fetch_transactions_for(address)
+        end
       end
 
       # Last transaction made to the address. Always use this method to check whether a transaction
@@ -188,7 +188,7 @@ module Straight
 
       # Returns an array of transactions for the order's address, which were created after the order
       def transactions_since(block_height: block_height_created_at, reload: false)
-        transactions(reload: reload).select { |t| !t[:block_height] || t.fetch(:block_height) > block_height }
+        transactions(reload: reload).select { |t| !t.block_height || t.block_height > block_height }
       end
 
       # Starts a loop which calls #status(reload: true) according to the schedule
