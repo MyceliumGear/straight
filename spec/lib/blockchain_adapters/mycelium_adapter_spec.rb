@@ -25,21 +25,15 @@ RSpec.describe Straight::Blockchain::MyceliumAdapter do
 
   it "fetches a single transaction" do
     tid = 'ae0d040f48d75fdc46d9035236a1782164857d6f0cca1f864640281115898560'
-    expect(adapter.fetch_transaction(tid)[:total_amount]).to eq(832947)
-  end
-
-  it "calculates the number of confirmations for each transaction" do
-    tid = 'ae0d040f48d75fdc46d9035236a1782164857d6f0cca1f864640281115898560'
-    expect(adapter.fetch_transaction(tid)[:confirmations]).to be > 0
-  end
-
-  it "gets a transaction id among other data" do
-    tid = 'ae0d040f48d75fdc46d9035236a1782164857d6f0cca1f864640281115898560'
-    expect(adapter.fetch_transaction(tid)[:tid]).to eq(tid)
+    transaction = adapter.fetch_transaction(tid)
+    expect(transaction[:total_amount]).to eq 832947
+    expect(transaction[:confirmations]).to be > 0
+    expect(transaction[:tid]).to eq tid
+    expect(transaction[:block_height]).to eq 317124
   end
 
   it "gets the latest block number" do
-    expect(adapter.latest_block[:block]["height"]).to be_kind_of(Integer)
+    expect(adapter.latest_block_height).to be >= 374620
   end
 
   it "caches latestblock requests" do
@@ -54,7 +48,7 @@ RSpec.describe Straight::Blockchain::MyceliumAdapter do
     adapter.send(:calculate_confirmations, 1)
     adapter.send(:calculate_confirmations, 1)
   end
-  
+
   it "raises an exception when something goes wrong with fetching datd" do
     expect( -> { adapter.send(:api_request, "/a-404-request") }).to raise_error(Straight::Blockchain::Adapter::RequestError)
   end

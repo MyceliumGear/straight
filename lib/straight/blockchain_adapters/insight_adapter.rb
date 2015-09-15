@@ -35,6 +35,10 @@ module Straight
         res["balanceSat"].to_i
       end
 
+      def latest_block_height(**)
+        api_request('/status', '')['info']['blocks']
+      end
+
     private
 
       def api_request(place, val)
@@ -61,11 +65,13 @@ module Straight
         end
         confirmations = transaction["confirmations"] 
         outs = transaction["vout"].map { |o| {amount: Satoshi.new(o["value"]).to_i, receiving_address: o["scriptPubKey"]["addresses"].first} }
+        block = api_request("/block/", transaction['blockhash'])
 
         {
           tid:           tid,
           total_amount:  total_amount,
           confirmations: confirmations || 0,
+          block_height:  block['height'],
           outs:          outs || []
         }
       end

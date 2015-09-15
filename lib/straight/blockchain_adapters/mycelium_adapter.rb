@@ -89,6 +89,10 @@ module Straight
         end
       end
 
+      def latest_block_height(force_reload: false)
+        latest_block(force_reload: force_reload)[:block]['height']
+      end
+
       private
 
         def api_request(method, params={})
@@ -143,6 +147,7 @@ module Straight
             tid:           tid,
             total_amount:  total_amount.to_i,
             confirmations: calculate_confirmations(block_height),
+            block_height:  block_height,
             outs:          outs
           }
         end
@@ -154,7 +159,7 @@ module Straight
         def calculate_confirmations(block_height, force_latest_block_reload: false)
 
           if block_height && block_height != -1
-            latest_block(force_reload: force_latest_block_reload)[:block]["height"] - block_height + 1
+            latest_block_height(force_reload: force_latest_block_reload) - block_height + 1
           else
             0
           end
