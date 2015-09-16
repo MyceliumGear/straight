@@ -147,7 +147,8 @@ module Straight
       end
 
       def status_unconfirmed?(transactions)
-        transactions.map { |t| t.confirmations }.compact.min.to_i < gateway.confirmations_required
+        confirmations = transactions.map { |t| t.confirmations }.compact.min.to_i
+        confirmations < gateway.confirmations_required
       end
 
       def status_locked?
@@ -182,7 +183,8 @@ module Straight
       def transactions(reload: false)
         @transactions = nil if reload
         @transactions ||= begin
-          Straight::Transaction.from_hashes gateway.fetch_transactions_for(address)
+          hashes = gateway.fetch_transactions_for(address)
+          Straight::Transaction.from_hashes hashes
         end
       end
 
