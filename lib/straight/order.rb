@@ -158,6 +158,13 @@ module Straight
         @status_changed
       end
 
+      def tid
+        (respond_to?(:[]) ? self[:tid] : @tid) || begin
+          tids = (accepted_transactions || []).map { |t| t[:tid] }.join(',')
+          tids.empty? ? nil : tids
+        end
+      end
+
     end
 
     module Includable

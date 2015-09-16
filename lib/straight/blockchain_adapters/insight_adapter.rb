@@ -26,8 +26,7 @@ module Straight
 
       def fetch_transactions_for(address)
         res = api_request("/addr/", address)
-        return [] if res["transactions"].empty?
-        [fetch_transaction(res["transactions"].first, address: address)]
+        (res['transactions'] || []).map { |tid| fetch_transaction(tid, address: address) }
       end
 
       def fetch_balance_for(address)

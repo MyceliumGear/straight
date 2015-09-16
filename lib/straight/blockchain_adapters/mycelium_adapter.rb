@@ -52,14 +52,12 @@ module Straight
       end
 
       # Supposed to returns all transactions for the address, but
-      # currently actually returns the first one, since we only need one.
       def fetch_transactions_for(address)
         # API may return nil instead of an empty array if address turns out to be invalid
         # (for example when trying to supply a testnet address instead of mainnet while using
         # mainnet adapter.
-        if api_response = api_request('queryTransactionInventory', { addresses: [address], limit: 1 })
-          tid = api_response["txIds"].first
-          tid ? [fetch_transaction(tid, address: address)] : []
+        if api_response = api_request('queryTransactionInventory', {addresses: [address], limit: 100})
+          (api_response['txIds'] || []).map { |tid| fetch_transaction(tid, address: address) }
         else
           raise BitcoinAddressInvalid, message: "address in question: #{address}"
         end
