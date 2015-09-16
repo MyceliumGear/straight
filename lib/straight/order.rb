@@ -22,7 +22,20 @@ module Straight
     # where we don't want to override AR getters and setters that set attribtues.
     def self.included(base)
       base.class_eval do
-        [:amount, :amount_paid, :address, :gateway, :keychain_id, :status, :tid, :title, :callback_url, :test_mode].each do |field|
+        %i{
+          accepted_transactions
+          address
+          amount
+          amount_paid
+          block_height_created_at
+          callback_url
+          gateway
+          keychain_id
+          status
+          test_mode
+          tid
+          title
+        }.each do |field|
           attr_reader field unless base.method_defined?(field)
           attr_writer field unless base.method_defined?("#{field}=")
         end
@@ -43,6 +56,7 @@ module Straight
       overpaid:     4, # amount that was received in a transaction was too large
       expired:      5, # too much time passed since creating an order
       canceled:     6, # user decides to economize
+      partially_paid: -3, # mutable, becomes underpaid or paid/overpaid
     }
 
     attr_reader :old_status
@@ -80,7 +94,8 @@ module Straight
         # This is just a caching workaround so we don't query
         # the blockchain needlessly. The actual safety switch is in the setter.
         if (reload || @status.nil?) && !status_locked?
-          self.status = get_transaction_status(reload: reload)
+          result = get_transaction_status(reload: reload)
+          result.each { |k, v| send :"#{k}=", v }
         end
 
         as_sym ? STATUSES.invert[@status] : @status
@@ -90,8 +105,6 @@ module Straight
         # Prohibit status update if the order was paid in some way,
         # so statuses above 1 are in fact immutable.
         return false if status_locked?
-
-        self.tid = transaction[:tid] if transaction
 
         # Pay special attention to the order of these statements. If you place
         # the assignment @status = new_status below the callback call,
@@ -107,32 +120,34 @@ module Straight
         super if defined?(super)
       end
 
-      def set_amount_paid(transaction)
-        self.amount_paid = transaction[:total_amount]
+      def get_transaction_status(reload: false, transactions: nil)
+        transactions ||=
+          if block_height_created_at.to_i > 0
+            transactions_since(reload: reload)
+          else
+            [transaction(reload: reload)]
+          end.compact
+
+        amount_paid = transactions.map { |t| t.amount }.reduce(:+) || 0
+
+        status =
+          if transactions.empty?
+            STATUSES.fetch(:new)
+          elsif amount_paid >= amount && status_unconfirmed?(transactions)
+            STATUSES.fetch(:unconfirmed)
+          elsif amount_paid == amount
+            STATUSES.fetch(:paid)
+          elsif amount_paid < amount
+            STATUSES.fetch(:partially_paid)
+          else
+            STATUSES.fetch(:overpaid)
+          end
+
+        {amount_paid: amount_paid, accepted_transactions: transactions, status: status}
       end
 
-      def get_transaction_status(reload: false)
-        t = transaction(reload: reload)
-        
-        return STATUSES[:new] if t.nil?
-        return STATUSES[:unconfirmed] if status_unconfirmed?(t[:confirmations])
-
-        set_amount_paid(t)
-        define_status(t[:total_amount], amount)
-      end
-
-      def define_status(total_amount, amount)
-        if total_amount == amount
-          STATUSES[:paid]
-        elsif total_amount < amount
-          STATUSES[:underpaid]
-        else
-          STATUSES[:overpaid]
-        end
-      end
-
-      def status_unconfirmed?(confirmations)
-        confirmations < gateway.confirmations_required
+      def status_unconfirmed?(transactions)
+        transactions.map { |t| t.confirmations }.compact.min.to_i < gateway.confirmations_required
       end
 
       def status_locked?
@@ -141,6 +156,13 @@ module Straight
 
       def status_changed?
         @status_changed
+      end
+
+      def tid
+        self[:tid] || begin
+          tids = (accepted_transactions || []).map { |t| t[:tid] }.join(',')
+          tids.empty? ? nil : tids
+        end
       end
 
     end
@@ -158,8 +180,10 @@ module Straight
       # For compliance, there's also a #transaction method which always returns
       # the last transaction made to the address.
       def transactions(reload: false)
-        @transactions = gateway.fetch_transactions_for(address) if reload || !@transactions
-        @transactions
+        @transactions = nil if reload
+        @transactions ||= begin
+          Straight::Transaction.from_hashes gateway.fetch_transactions_for(address)
+        end
       end
 
       # Last transaction made to the address. Always use this method to check whether a transaction
@@ -167,6 +191,11 @@ module Straight
       # always assume it's the last transaction that we want to check.
       def transaction(reload: false)
         transactions(reload: reload).first
+      end
+
+      # Returns an array of transactions for the order's address, which were created after the order
+      def transactions_since(block_height: block_height_created_at, reload: false)
+        transactions(reload: reload).select { |t| !t.block_height || t.block_height > block_height }
       end
 
       # Starts a loop which calls #status(reload: true) according to the schedule
@@ -204,6 +233,10 @@ module Straight
               time_passed:     time_passed
             )
           end
+        elsif self.status == -3
+          self.status = 3
+        # elsif self.status == 1
+        #   TODO: orders with unconfirmed transactions should not expire
         elsif self.status < 2
           self.status = STATUSES[:expired]
         end

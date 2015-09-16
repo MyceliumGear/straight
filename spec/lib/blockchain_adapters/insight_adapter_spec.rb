@@ -15,27 +15,34 @@ RSpec.describe Straight::Blockchain::InsightAdapter do
     VCR.eject_cassette
   end
 
-  let(:tid) { 'b168b57a9ae38c0671c5eef3be6c8305782bd1351e75028dac491185388d5424' }
+  let(:tx) { {
+    tid: '6d638507f60a8cd6789087cd478524a65e8c85f079bb0772f782e6f6b27e2c74',
+    amount: 16419497,
+    block_height: 374619,
+  } }
 
   it "fetches a single transaction" do
-    expect(mainnet_adapter.fetch_transaction(tid)[:total_amount]).to eq(499900000)
+    transaction = mainnet_adapter.fetch_transaction(tx[:tid])
+    expect(transaction[:total_amount]).to eq tx[:amount]
+    expect(transaction[:confirmations]).to be > 0
+    expect(transaction[:tid]).to eq tx[:tid]
+    expect(transaction[:block_height]).to eq tx[:block_height]
   end
 
-  it "returns correct prepared data" do
-    expect(mainnet_adapter.fetch_transaction(tid)[:total_amount]).to eq(499900000)
-    expect(mainnet_adapter.fetch_transaction(tid)[:tid]).to eq("b168b57a9ae38c0671c5eef3be6c8305782bd1351e75028dac491185388d5424")
-    expect(mainnet_adapter.fetch_transaction(tid)[:outs].first[:amount]).to eq(187000000)
+  it "gets the latest block number" do
+    expect(mainnet_adapter.latest_block_height).to be >= 374620
   end
 
   it "fetches first transaction for the given address" do
-    address = "1CBWzY7PEnUtT4b36bth4UZuNmby9pTT7A"
-    expect(mainnet_adapter.fetch_transactions_for(address)).to be_kind_of(Array)
-    expect(mainnet_adapter.fetch_transactions_for(address)).not_to be_empty
+    address = "14fUugavBtRG73BE9FCfoCYs3BBxtDxUL1"
+    transactions = mainnet_adapter.fetch_transactions_for(address)
+    expect(transactions).to be_kind_of(Array)
+    expect(transactions).not_to be_empty
   end
 
   it "fetches balance for given address" do
-    address = "16iKJsRM3LrA4k7NeTQbCB9ZDpV64Fkm6"
-    expect(mainnet_adapter.fetch_balance_for(address)).to eq(0)
+    address = "14fUugavBtRG73BE9FCfoCYs3BBxtDxUL1"
+    expect(mainnet_adapter.fetch_balance_for(address)).to be_kind_of Integer
   end
 
   it "raises exception if something wrong with network" do
@@ -44,7 +51,7 @@ RSpec.describe Straight::Blockchain::InsightAdapter do
 
   it "raises exception if worng main_url" do
     adapter = Straight::Blockchain::InsightAdapter.mainnet_adapter(main_url: "https://insight.mycelium.com/wrong_api")
-    expect{ adapter.fetch_transaction(tid)[:total_amount] }.to raise_error(Straight::Blockchain::Adapter::RequestError)
+    expect{ adapter.fetch_transaction(tx[:tid])[:total_amount] }.to raise_error(Straight::Blockchain::Adapter::RequestError)
   end
 
   it "should return message if given wrong address" do

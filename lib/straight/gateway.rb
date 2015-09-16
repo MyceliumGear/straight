@@ -87,7 +87,7 @@ module Straight
         # 
         # The reason these arguments are supplied as a hash and not as named arguments
         # is because we don't know in advance which arguments are required for a particular
-        # AddressAdapter. So we accpet all, check manually for required ones like :amount,
+        # AddressAdapter. So we accept all, check manually for required ones like :amount,
         # set default values where needed and then hand them all to address_adapter.
         if args[:amount].nil? || !args[:amount].kind_of?(Numeric) || args[:amount] <= 0
           raise OrderAmountInvalid, "amount cannot be nil and should be more than 0" 
@@ -113,6 +113,7 @@ module Straight
         order.keychain_id = args[:keychain_id]
         order.address     = address
         order.amount      = amount
+        order.block_height_created_at = fetch_latest_block_height rescue nil
         order
       end
 
@@ -126,6 +127,10 @@ module Straight
       
       def fetch_balance_for(address)
         Straight::BlockchainAdaptersDispatcher.new(blockchain_adapters) { |b| b.fetch_balance_for(address) }.result
+      end
+
+      def fetch_latest_block_height
+        Straight::BlockchainAdaptersDispatcher.new(blockchain_adapters, &:latest_block_height).result
       end
 
       def keychain

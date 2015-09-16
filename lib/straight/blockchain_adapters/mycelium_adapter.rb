@@ -52,14 +52,12 @@ module Straight
       end
 
       # Supposed to returns all transactions for the address, but
-      # currently actually returns the first one, since we only need one.
       def fetch_transactions_for(address)
         # API may return nil instead of an empty array if address turns out to be invalid
         # (for example when trying to supply a testnet address instead of mainnet while using
         # mainnet adapter.
-        if api_response = api_request('queryTransactionInventory', { addresses: [address], limit: 1 })
-          tid = api_response["txIds"].first
-          tid ? [fetch_transaction(tid, address: address)] : []
+        if api_response = api_request('queryTransactionInventory', {addresses: [address], limit: 100})
+          (api_response['txIds'] || []).map { |tid| fetch_transaction(tid, address: address) }
         else
           raise BitcoinAddressInvalid, message: "address in question: #{address}"
         end
@@ -87,6 +85,10 @@ module Straight
         else
           @latest_block
         end
+      end
+
+      def latest_block_height(force_reload: false)
+        latest_block(force_reload: force_reload)[:block]['height']
       end
 
       private
@@ -143,6 +145,7 @@ module Straight
             tid:           tid,
             total_amount:  total_amount.to_i,
             confirmations: calculate_confirmations(block_height),
+            block_height:  block_height,
             outs:          outs
           }
         end
@@ -154,7 +157,7 @@ module Straight
         def calculate_confirmations(block_height, force_latest_block_reload: false)
 
           if block_height && block_height != -1
-            latest_block(force_reload: force_latest_block_reload)[:block]["height"] - block_height + 1
+            latest_block_height(force_reload: force_latest_block_reload) - block_height + 1
           else
             0
           end

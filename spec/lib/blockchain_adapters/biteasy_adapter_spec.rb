@@ -19,7 +19,9 @@ RSpec.describe Straight::Blockchain::BiteasyAdapter do
 
   it "fetches a single transaction" do
     tid = 'ae0d040f48d75fdc46d9035236a1782164857d6f0cca1f864640281115898560'
-    expect(adapter.fetch_transaction(tid)[:total_amount]).to eq(832947)
+    transaction = adapter.fetch_transaction(tid)
+    expect(transaction[:total_amount]).to eq 832947
+    expect(transaction[:block_height]).to eq 317124
   end
 
   it "calculates total_amount of a transaction for the given address only" do

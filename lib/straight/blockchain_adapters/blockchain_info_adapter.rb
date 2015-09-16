@@ -49,6 +49,10 @@ module Straight
         end
       end
 
+      def latest_block_height(force_reload: false)
+        latest_block(force_reload: force_reload)[:block]['height']
+      end
+
       private
 
         def api_request(url)
@@ -80,6 +84,7 @@ module Straight
             tid:           transaction['hash'],
             total_amount:  total_amount,
             confirmations: calculate_confirmations(transaction),
+            block_height:  transaction['block_height'],
             outs:          outs
           }
         end
@@ -92,7 +97,7 @@ module Straight
         def calculate_confirmations(transaction, force_latest_block_reload: false)
 
           if transaction["block_height"]
-            latest_block(force_reload: force_latest_block_reload)[:block]["height"] - transaction["block_height"] + 1
+            latest_block_height(force_reload: force_latest_block_reload) - transaction["block_height"] + 1
           else
             0
           end
