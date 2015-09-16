@@ -32,20 +32,15 @@ RSpec.describe Straight::Order do
   end
 
   it "gets the last transaction for the current address, caches the request" do
-    expect(@gateway).to receive(:fetch_transactions_for).with(@order.address).once.and_return(true)
+    expect(@gateway).to receive(:fetch_transactions_for).with(@order.address).once.and_return({})
     @order.transactions
     @order.transactions
   end
 
   it "gets all transactions for the current address, caches the request" do
-    expect(@gateway).to receive(:fetch_transactions_for).with(@order.address).once.and_return(['t1', 't2'])
-    expect(@order.transaction).to eq('t1')
-    expect(@order.transaction).to eq('t1')
-  end
-
-  it "sets transaction id when the status is changed from 0" do
-    @order.status = 2
-    expect(@order.tid).to eq('xxx') # xxx because that's what we set in the allow() in before(:each) block
+    expect(@gateway).to receive(:fetch_transactions_for).with(@order.address).once.and_return([{tid: 't1'}, {tid: 't2'}])
+    expect(@order.transaction.tid).to eq 't1'
+    expect(@order.transaction.tid).to eq 't1'
   end
 
   it "displays order attributes as json" do
@@ -89,32 +84,32 @@ RSpec.describe Straight::Order do
     end
 
     it "sets status to :unconfirmed if transaction doesn't have enough confirmations" do
-      transaction = { confirmations: 0 }
+      transaction = Straight::Transaction.from_hash(confirmations: 0, total_amount: @order.amount)
       expect(@order).to receive(:transaction).at_most(3).times.and_return(transaction)
       expect(@order.status(reload: true)).to eq(1)
     end
 
     it "sets status to :paid if transaction has enough confirmations and the amount is correct" do
-      transaction = { confirmations: 1, total_amount: @order.amount }
+      transaction = Straight::Transaction.from_hash(confirmations: 1, total_amount: @order.amount)
       expect(@order).to receive(:transaction).at_most(3).times.and_return(transaction)
       expect(@order.status(reload: true)).to eq(2)
       expect(@order.status(as_sym: true)).to eq :paid
     end
 
-    it "sets status to :underpaid if the total amount in a transaction is less than the amount of order" do
-      transaction = { confirmations: 1, total_amount: @order.amount-1 }
+    it "sets status to :partially_paid if the total amount in a transaction is less than the amount of order" do
+      transaction = Straight::Transaction.from_hash(confirmations: 1, total_amount: @order.amount-1)
       expect(@order).to receive(:transaction).at_most(3).times.and_return(transaction)
-      expect(@order.status(reload: true)).to eq(3)
+      expect(@order.status(reload: true)).to eq(-3)
     end
 
     it "sets status to :overderpaid if the total amount in a transaction is more than the amount of order" do
-      transaction = { confirmations: 1, total_amount: @order.amount+1 }
+      transaction = Straight::Transaction.from_hash(confirmations: 1, total_amount: @order.amount+1)
       expect(@order).to receive(:transaction).at_most(3).times.and_return(transaction)
       expect(@order.status(reload: true)).to eq(4)
     end
 
     it "invokes a callback on the gateway when status changes" do
-      transaction = { confirmations: 1, total_amount: @order.amount }
+      transaction = Straight::Transaction.from_hash(confirmations: 1, total_amount: @order.amount)
       allow(@order).to receive(:transaction).and_return(transaction)
       expect(@gateway).to receive(:order_status_changed).with(@order)
       @order.status(reload: true)
@@ -137,13 +132,56 @@ RSpec.describe Straight::Order do
     end
 
     it 'is have amount_paid set to total_amount if order paid' do
-      transaction = { confirmations: 100, total_amount: 10 }
+      transaction = Straight::Transaction.from_hash(confirmations: 100, total_amount: 10)
       allow(@order).to receive(:transaction).and_return(transaction)
 
       @order.status(reload: true)
       expect(@order.amount_paid).to eq(10)
     end
- 
+
+    it "uses transactions_since if block_height_created_at is set" do
+      allow(@gateway).to receive(:confirmations_required).and_return(0)
+      allow(@order).to receive(:transactions).and_return(Straight::Transaction.from_hashes [{confirmations: 0, total_amount: @order.amount}, {confirmations: 1, total_amount: 3, block_height: 100000}, {confirmations: 100, total_amount: 1, block_height: 99999}])
+
+      # only the latest transaction is accepted
+      expect(@order.status(reload: true)).to eq 2
+      expect(@order.amount_paid).to eq @order.amount
+      expect(@order.accepted_transactions.size).to eq 1
+
+      @order.instance_variable_set :@status, nil
+
+      # unconfirmed transaction is accepted
+      @order.block_height_created_at = 100000
+      expect(@order.status(reload: true)).to eq 2
+      expect(@order.amount_paid).to eq @order.amount
+      expect(@order.accepted_transactions.size).to eq 1
+
+      @order.instance_variable_set :@status, nil
+
+      # two transactions are accepted
+      @order.block_height_created_at = 99999
+      expect(@order.status(reload: true)).to eq 4
+      expect(@order.amount_paid).to eq @order.amount + 3
+      expect(@order.accepted_transactions.size).to eq 2
+
+      @order.instance_variable_set :@status, nil
+      allow(@gateway).to receive(:confirmations_required).and_return(1)
+
+      # when unconfirmed total_amount >= order.amount, order gets :unconfirmed status
+      @order.block_height_created_at = 99999
+      expect(@order.status(reload: true)).to eq 1
+      expect(@order.amount_paid).to eq @order.amount + 3
+      expect(@order.accepted_transactions.size).to eq 2
+
+      @order.instance_variable_set :@status, nil
+      allow(@order).to receive(:transactions).and_return(Straight::Transaction.from_hashes [{confirmations: 0, total_amount: @order.amount - 1}])
+
+      # when total_amount < order.amount, order gets :partially_paid status
+      expect(@order.status(reload: true)).to eq -3
+      expect(@order.amount_paid).to eq @order.amount - 1
+      expect(@order.accepted_transactions.size).to eq 1
+    end
+
   end
 
 end

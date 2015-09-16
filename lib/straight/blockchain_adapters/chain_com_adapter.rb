@@ -66,6 +66,7 @@ module Straight
             tid:           transaction['hash'],
             total_amount:  total_amount,
             confirmations: transaction['confirmations'],
+            block_height:  transaction['block_height'],
             outs:          outs
         }
       end

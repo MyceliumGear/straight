@@ -26,13 +26,16 @@ module Straight
 
       def fetch_transactions_for(address)
         res = api_request("/addr/", address)
-        return [] if res["transactions"].empty?
-        [fetch_transaction(res["transactions"].first, address: address)]
+        (res['transactions'] || []).map { |tid| fetch_transaction(tid, address: address) }
       end
 
       def fetch_balance_for(address)
         res = api_request("/addr/", address)
         res["balanceSat"].to_i
+      end
+
+      def latest_block_height(**)
+        api_request('/status', '')['info']['blocks']
       end
 
     private
@@ -61,11 +64,13 @@ module Straight
         end
         confirmations = transaction["confirmations"] 
         outs = transaction["vout"].map { |o| {amount: Satoshi.new(o["value"]).to_i, receiving_address: o["scriptPubKey"]["addresses"].first} }
+        block = api_request("/block/", transaction['blockhash'])
 
         {
           tid:           tid,
           total_amount:  total_amount,
           confirmations: confirmations || 0,
+          block_height:  block['height'],
           outs:          outs || []
         }
       end

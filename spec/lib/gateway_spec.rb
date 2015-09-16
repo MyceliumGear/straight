@@ -5,6 +5,7 @@ RSpec.describe Straight::Gateway do
   before(:each) do
     @mock_adapter                  = double("mock blockchain adapter")
     allow(@mock_adapter).to receive(:testnet_adapter)
+    allow(@mock_adapter).to receive(:latest_block_height).and_return(nil)
     @gateway                       = Straight::Gateway.new
     @gateway.pubkey                = "pubkey"
     @gateway.order_class           = "Straight::Order"

@@ -24,7 +24,9 @@ RSpec.describe Straight::Blockchain::ChainComAdapter do
     end
 
     it "fetches a single transaction" do
-      expect(adapter.fetch_transaction(tid)[:total_amount]).to eq(832947)
+      transaction = adapter.fetch_transaction(tid)
+      expect(transaction[:total_amount]).to eq(832947)
+      expect(transaction[:block_height]).to eq 317124
     end
 
     it "fetches all transactions for the current address" do
