@@ -203,7 +203,14 @@ module Straight
               last_exception = e
               # let's not log error for the last adapter, it will be re-raised anyway
               unless index == adapters.size - 1
-                Straight.logger.error "Adapter #{adapter.inspect} failed with #{e.inspect}:\n#{e.backtrace.join("\n")}"
+                loglevel =
+                  case e
+                  when Straight::ExchangeRate::Adapter::CurrencyNotSupported
+                    :debug
+                  else
+                    :error
+                  end
+                Straight.logger.send loglevel, "Adapter #{adapter.inspect} failed with #{e.inspect}:\n#{e.backtrace.join("\n")}"
               end
               # If an exception wasn't re-raised, it passes on to the next adapter and attempts to call a method on it
             end
