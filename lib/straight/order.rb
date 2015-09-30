@@ -197,7 +197,7 @@ module Straight
 
       # Returns an array of transactions for the order's address, which were created after the order
       def transactions_since(block_height: block_height_created_at, reload: false)
-        transactions(reload: reload).select { |t| !t.block_height || t.block_height > block_height }
+        transactions(reload: reload).select { |t| t.block_height.to_i <= 0 || t.block_height > block_height }
       end
 
       # Starts a loop which calls #status(reload: true) according to the schedule
