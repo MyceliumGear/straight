@@ -184,7 +184,19 @@ module Straight
         @transactions = nil if reload
         @transactions ||= begin
           hashes = gateway.fetch_transactions_for(address)
-          Straight::Transaction.from_hashes hashes
+          result = Straight::Transaction.from_hashes(hashes)
+
+          weird  = []
+          result.each_with_index do |transaction, index|
+            if transaction.amount.to_i <= 0
+              weird << hashes[index]
+            end
+          end
+          if weird.size > 0
+            Straight.logger.warn "Got weird transactions: #{weird.inspect}"
+          end
+
+          result
         end
       end
 

@@ -71,7 +71,10 @@ module Straight
           total_amount:  total_amount,
           confirmations: confirmations || 0,
           block_height:  block['height'],
-          outs:          outs || []
+          outs:          outs || [],
+          meta: {
+            fetched_via: self,
+          },
         }
       end
 
