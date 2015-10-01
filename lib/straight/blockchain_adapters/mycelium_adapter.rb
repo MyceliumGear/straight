@@ -146,7 +146,10 @@ module Straight
             total_amount:  total_amount.to_i,
             confirmations: calculate_confirmations(block_height),
             block_height:  block_height,
-            outs:          outs
+            outs:          outs,
+            meta: {
+              fetched_via: self,
+            },
           }
         end
 

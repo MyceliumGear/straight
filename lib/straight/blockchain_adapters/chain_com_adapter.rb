@@ -67,7 +67,10 @@ module Straight
             total_amount:  total_amount,
             confirmations: transaction['confirmations'],
             block_height:  transaction['block_height'],
-            outs:          outs
+            outs:          outs,
+            meta: {
+              fetched_via: self,
+            },
         }
       end
 
