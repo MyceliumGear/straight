@@ -1,11 +1,9 @@
 Straight
 ========
 
-[![Build Status](https://travis-ci.org/MyceliumGear/straight.svg?branch=master)](https://travis-ci.org/MyceliumGear/straight)
-
 > Receive bitcoin payments directly into your wallet
 
-> Website: http://straight.romansnitko.com
+> Website: https://gear.mycelium.com
 
 Straight is a built-in stateless gateway library written in Ruby.
 It allows you to receive bitcoin payments for your online store. Drop in this library,
@@ -18,7 +16,7 @@ confirmed so you can ship away.
 
 IMPORTANT: this is a gem, not a server. It has no state and is intended to use within
 an application, such as Ruby On Rails. Most likely, you want
-[straight-server](https://github.com/snitko/straight-server), it is a server,
+[straight-server](https://github.com/MyceliumGear/straight-server), it is a server,
 which holds the state of all orders for you and has a RESTful API you can use
 with any application written in any language or platform.
 
