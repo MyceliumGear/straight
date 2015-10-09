@@ -163,6 +163,7 @@ module Straight
         @status_changed
       end
 
+      # @deprecated
       def tid
         (respond_to?(:[]) ? self[:tid] : @tid) || begin
           tids = (accepted_transactions || []).map { |t| t[:tid] }.join(',')
@@ -253,7 +254,13 @@ module Straight
       end
 
       def to_h
-        { status: status, amount: amount, address: address, tid: tid }
+        {
+          status: status,
+          amount: amount,
+          address: address,
+          tid: tid, # @deprecated
+          transaction_ids: (accepted_transactions || []).map(&:tid),
+        }
       end
 
       def amount_in_btc(field: amount, as: :number)
