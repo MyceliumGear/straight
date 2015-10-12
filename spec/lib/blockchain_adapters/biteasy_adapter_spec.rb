@@ -48,11 +48,4 @@ RSpec.describe Straight::Blockchain::BiteasyAdapter do
   it "raises an exception when something goes wrong with fetching data" do
     expect( -> { adapter.send(:api_request, "/a-404-request") }).to raise_error(Straight::Blockchain::Adapter::RequestError)
   end
-
-  it "uses the same Singleton instance" do
-    a = Straight::Blockchain::BiteasyAdapter.mainnet_adapter
-    b = Straight::Blockchain::BiteasyAdapter.mainnet_adapter
-    expect(a).to eq(b)
-  end
-
 end

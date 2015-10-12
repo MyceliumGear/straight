@@ -3,20 +3,24 @@ module Straight
     
     class InsightAdapter < Adapter
 
-      @@test_url = nil
-
-      def self.mainnet_adapter(main_url:, test_url: nil)
-        @@test_url = test_url
-        new(main_url)
+      def self.support_mainnet?
+        true
       end
 
-      def self.testnet_adapter
-        raise "Testnet not implemented" unless @@test_url
-        new(@@test_url)
+      def self.support_testnet?
+        true
       end
 
-      def initialize(host_url)
-        @base_url = host_url
+      def self.mainnet_adapter(url:)
+        new(url)
+      end
+
+      def self.testnet_adapter(url:)
+        new(url)
+      end
+
+      def initialize(url)
+        @base_url = url
       end
 
       def fetch_transaction(tid, address: nil)

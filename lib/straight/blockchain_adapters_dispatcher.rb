@@ -34,8 +34,12 @@ module Straight
       attempts_counter = Concurrent::MVar.new(adapters_to_run.size)
       pool             = Concurrent::ThreadPoolExecutor.new
       adapters_to_run.each do |adapter|
-        p = Concurrent::Promise.new(executor: pool) { block.call(adapter) }
+        p = Concurrent::Promise.new(executor: pool) {
+          Straight.logger.debug "Blockchain query via #{adapter.inspect}"
+          block.call(adapter)
+        }
         p.on_success do |result|
+          Straight.logger.debug "Got blockchain query response via #{adapter.inspect}"
           @defer_result.set(result)
           pool.kill
         end

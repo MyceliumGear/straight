@@ -3,17 +3,23 @@ module Straight
 
     class BlockchainInfoAdapter < Adapter
 
+      def self.support_mainnet?
+        true
+      end
+
+      def self.support_testnet?
+        false
+      end
+
       def self.mainnet_adapter
-        instance = self.instance
-        instance._initialize("https://blockchain.info")
-        instance
+        new('https://blockchain.info')
       end
       
       def self.testnet_adapter
         raise "Not Supported Yet"
       end
       
-      def _initialize(base_url)
+      def initialize(base_url)
         @latest_block = { cache_timestamp: nil, block: nil }
         @base_url = base_url
       end

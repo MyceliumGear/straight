@@ -15,6 +15,14 @@ module Straight
         6afe0e9b6806fa4a49fc6818512014332953f30101dad7b91e76c14e073c3134
       }.to_set
 
+      def self.support_mainnet?
+        true
+      end
+
+      def self.support_testnet?
+        true
+      end
+
       def self.mainnet_adapter
         new(testnet: false)
       end
