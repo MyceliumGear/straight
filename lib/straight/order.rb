@@ -128,7 +128,7 @@ module Straight
             [transaction(reload: reload)]
           end.compact
 
-        uniq_transactions = transactions.group_by(&:tid).each_value.map(&:first)
+        uniq_transactions = transactions.uniq(&:tid)
         amount_paid       = uniq_transactions.map(&:amount).reduce(:+) || 0
 
         if !uniq_transactions.empty? && amount_paid <= 0
