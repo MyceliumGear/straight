@@ -141,7 +141,7 @@ RSpec.describe Straight::Order do
 
     it "uses transactions_since if block_height_created_at is set" do
       allow(@gateway).to receive(:confirmations_required).and_return(0)
-      allow(@order).to receive(:transactions).and_return(Straight::Transaction.from_hashes [{confirmations: 0, total_amount: @order.amount}, {confirmations: 1, total_amount: 3, block_height: 100000}, {confirmations: 100, total_amount: 1, block_height: 99999}])
+      allow(@order).to receive(:transactions).and_return(Straight::Transaction.from_hashes [{tid: '3', confirmations: 0, total_amount: @order.amount}, {tid: '2', confirmations: 1, total_amount: 3, block_height: 100000}, {tid: '1', confirmations: 100, total_amount: 1, block_height: 99999}])
 
       # only the latest transaction is accepted
       expect(@order.status(reload: true)).to eq 2

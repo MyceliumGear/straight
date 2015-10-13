@@ -6,6 +6,14 @@ module Straight
       MAINNET_BASE_URL = 'https://api.chain.com/v2/bitcoin'
       TESTNET_BASE_URL = 'https://api.chain.com/v2/testnet3'
 
+      def self.support_mainnet?
+        true
+      end
+
+      def self.support_testnet?
+        true
+      end
+
       def self.mainnet_adapter(api_key_id:)
         new(api_key_id: api_key_id)
       end
@@ -15,7 +23,7 @@ module Straight
       end
 
       def initialize(api_key_id:, testnet: false)
-        raise ChainComAdapterApiKeyIdError if api_key_id.nil?
+        raise ChainComAdapterApiKeyIdError if api_key_id.to_s.empty?
 
         @base_url = testnet ? TESTNET_BASE_URL : MAINNET_BASE_URL
         @api_key_id = api_key_id

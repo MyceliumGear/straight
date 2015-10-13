@@ -128,16 +128,17 @@ module Straight
             [transaction(reload: reload)]
           end.compact
 
-        amount_paid = transactions.map { |t| t.amount }.reduce(:+) || 0
+        uniq_transactions = transactions.uniq(&:tid)
+        amount_paid       = uniq_transactions.map(&:amount).reduce(:+) || 0
 
-        if !transactions.empty? && amount_paid <= 0
-          Straight.logger.warn "Strange transactions for address #{address}: #{transactions.inspect}"
+        if !uniq_transactions.empty? && amount_paid <= 0
+          Straight.logger.warn "Strange transactions for address #{address}: #{uniq_transactions.inspect}"
         end
 
         status =
-          if transactions.empty?
+          if uniq_transactions.empty?
             STATUSES.fetch(:new)
-          elsif amount_paid >= amount && status_unconfirmed?(transactions)
+          elsif amount_paid >= amount && status_unconfirmed?(uniq_transactions)
             STATUSES.fetch(:unconfirmed)
           elsif amount_paid == amount
             STATUSES.fetch(:paid)
@@ -147,7 +148,7 @@ module Straight
             STATUSES.fetch(:overpaid)
           end
 
-        {amount_paid: amount_paid, accepted_transactions: transactions, status: status}
+        {amount_paid: amount_paid, accepted_transactions: uniq_transactions, status: status}
       end
 
       def status_unconfirmed?(transactions)

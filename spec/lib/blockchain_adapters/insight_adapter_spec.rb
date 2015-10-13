@@ -2,7 +2,7 @@ require 'spec_helper'
 
 RSpec.describe Straight::Blockchain::InsightAdapter do
 
-  subject(:mainnet_adapter) { Straight::Blockchain::InsightAdapter.mainnet_adapter(main_url: "https://insight.mycelium.com/api") }
+  subject(:mainnet_adapter) { Straight::Blockchain::InsightAdapter.mainnet_adapter(url: "https://insight.mycelium.com/api") }
 
   before :all do
     VCR.configure do |c|
@@ -50,7 +50,7 @@ RSpec.describe Straight::Blockchain::InsightAdapter do
   end
 
   it "raises exception if worng main_url" do
-    adapter = Straight::Blockchain::InsightAdapter.mainnet_adapter(main_url: "https://insight.mycelium.com/wrong_api")
+    adapter = Straight::Blockchain::InsightAdapter.mainnet_adapter(url: "https://insight.mycelium.com/wrong_api")
     expect{ adapter.fetch_transaction(tx[:tid])[:total_amount] }.to raise_error(Straight::Blockchain::Adapter::RequestError)
   end
 

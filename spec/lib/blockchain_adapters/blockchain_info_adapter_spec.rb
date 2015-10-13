@@ -53,11 +53,4 @@ RSpec.describe Straight::Blockchain::BlockchainInfoAdapter do
     t = { 'out' => [{ 'value' => 1, 'addr' => 'address1'}, { 'value' => 1, 'addr' => 'address2'}] }
     expect(adapter.send(:straighten_transaction, t, address: 'address1')[:total_amount]).to eq(1)
   end
-
-  it "uses the same Singleton instance" do
-    a = Straight::Blockchain::BlockchainInfoAdapter.mainnet_adapter
-    b = Straight::Blockchain::BlockchainInfoAdapter.mainnet_adapter
-    expect(a).to eq(b)
-  end
-
 end

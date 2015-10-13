@@ -32,6 +32,7 @@ module Straight
           :confirmations_required,
           :status_check_schedule,
           :blockchain_adapters,
+          :test_blockchain_adapters,
           :exchange_rate_adapters,
           :order_callbacks,
           :order_class,
@@ -73,10 +74,6 @@ module Straight
       def blockchain_adapters
         return test_blockchain_adapters if test_mode
         @blockchain_adapters
-      end
-
-      def test_blockchain_adapters
-        @blockchain_adapters.map{ |el| el.class.testnet_adapter rescue next }.compact
       end
 
       # Creates a new order for the address derived from the pubkey and the keychain_id argument provided.
@@ -232,8 +229,6 @@ module Straight
       @blockchain_adapters = [
         Blockchain::BlockchainInfoAdapter.mainnet_adapter,
         Blockchain::MyceliumAdapter.mainnet_adapter,
-        Blockchain::InsightAdapter.mainnet_adapter(main_url: "https://insight.mycelium.com/api"),
-        Blockchain::ChainComAdapter.mainnet_adapter(api_key_id: '')
       ]
       @exchange_rate_adapters = [
         ExchangeRate::BitpayAdapter.instance, 

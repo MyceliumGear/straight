@@ -3,17 +3,23 @@ module Straight
 
     class BiteasyAdapter < Adapter
 
+      def self.support_mainnet?
+        true
+      end
+
+      def self.support_testnet?
+        false
+      end
+
       def self.mainnet_adapter
-        instance = self.instance
-        instance._initialize("https://api.biteasy.com/blockchain/v1")
-        instance
+        new('https://api.biteasy.com/blockchain/v1')
       end
       
       def self.testnet_adapter
         raise "Not Supported Yet"
       end
       
-      def _initialize(base_url)
+      def initialize(base_url)
         @base_url = base_url
       end
 
