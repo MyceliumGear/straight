@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe Straight::ExchangeRate::AverageRateAdapter do
 
   before :all do
-    VCR.insert_cassette 'exchange_rate_average_rate_adapter'
+    VCR.insert_cassette 'exchange_rate_adapters/bitcoin_adapters/average_rate_adapter'
   end
 
   after :all do
@@ -12,7 +12,7 @@ RSpec.describe Straight::ExchangeRate::AverageRateAdapter do
 
   before(:each) do
     @average_rates_adapter = Straight::ExchangeRate::AverageRateAdapter.instance(
-      Straight::ExchangeRate::BitstampAdapter, 
+      Straight::ExchangeRate::BitstampAdapter,
       Straight::ExchangeRate::BitpayAdapter.instance,
     )
   end

@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-RSpec.describe Straight::ExchangeRate::CoinbaseAdapter do
+RSpec.describe Straight::ExchangeRate::BitpayAdapter do
 
   before :all do
-    VCR.insert_cassette 'exchange_rate_coinbase_adapter'
+    VCR.insert_cassette 'exchange_rate_adapters/bitcoin_adapters/bitpay_adapter.yml'
   end
 
   after :all do
@@ -11,7 +11,7 @@ RSpec.describe Straight::ExchangeRate::CoinbaseAdapter do
   end
 
   before(:each) do
-    @exchange_adapter = Straight::ExchangeRate::CoinbaseAdapter.instance
+    @exchange_adapter = Straight::ExchangeRate::BitpayAdapter.instance
   end
 
   it "finds the rate for currency code" do
@@ -20,9 +20,9 @@ RSpec.describe Straight::ExchangeRate::CoinbaseAdapter do
   end
 
   it "raises exception if rate is nil" do
-    json_response_1 = '{}'
-    json_response_2 = '{"btc_to_urd":"224.41","usd_to_xpf":"105.461721","bsd_to_btc":"0.004456"}'
-    json_response_3 = '{"btc_to_usd":null,"usd_to_xpf":"105.461721","bsd_to_btc":"0.004456"}'
+    json_response_1 = '[{},{}]'
+    json_response_2 = '[{"code":"USD","name":"US Dollar","rat":223.59},{"code":"EUR","name":"Eurozone Euro","rate":197.179544}]'
+    json_response_3 = '[{"code":"USD","name":"US Dollar","rate":null},{"code":"EUR","name":"Eurozone Euro","rate":197.179544}]'
     uri_mock = double('uri mock')
     allow(uri_mock).to receive(:read).with(read_timeout: 4).and_return(json_response_1, json_response_2, json_response_3)
     allow(URI).to      receive(:parse).and_return(uri_mock)

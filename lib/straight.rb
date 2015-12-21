@@ -30,6 +30,7 @@ require_relative 'straight/blockchain_adapters/insight_adapter'
 require_relative 'straight/blockchain_adapters/chain_com_adapter'
 
 require_relative 'straight/exchange_rate_adapter'
+
 require_relative 'straight/exchange_rate_adapters/bitcoin_adapter'
 require_relative 'straight/exchange_rate_adapters/bitcoin_adapters/bitpay_adapter'
 require_relative 'straight/exchange_rate_adapters/bitcoin_adapters/coinbase_adapter'
@@ -39,6 +40,9 @@ require_relative 'straight/exchange_rate_adapters/bitcoin_adapters/okcoin_adapte
 require_relative 'straight/exchange_rate_adapters/bitcoin_adapters/btce_adapter'
 require_relative 'straight/exchange_rate_adapters/bitcoin_adapters/kraken_adapter'
 require_relative 'straight/exchange_rate_adapters/bitcoin_adapters/average_rate_adapter'
+
+require_relative 'straight/exchange_rate_adapters/forex_adapter'
+require_relative 'straight/exchange_rate_adapters/forex_adapters/fixer_adapter'
 
 require_relative 'straight/address_providers/bip32'
 
