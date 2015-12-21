@@ -1,7 +1,7 @@
 module Straight
   module ExchangeRate
 
-    class AverageRateAdapter < Adapter
+    class AverageRateAdapter < BitcoinAdapter
 
       # Takes exchange rate adapters instances or classes as arguments
       def self.instance(*adapters)
@@ -24,7 +24,7 @@ module Straight
 
       def rate_for(currency_code)
         rates = []
-        @adapters.each do |adapter| 
+        @adapters.each do |adapter|
           begin
             rates << adapter.rate_for(currency_code)
           rescue CurrencyNotSupported
@@ -32,7 +32,7 @@ module Straight
           end
         end
 
-        unless rates.select(&:nil?).size == @adapters.size 
+        unless rates.select(&:nil?).size == @adapters.size
           rates.compact!
           rates.inject {|sum, rate| sum + rate} / rates.size
         else

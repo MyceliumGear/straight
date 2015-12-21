@@ -1,8 +1,8 @@
 module Straight
   module ExchangeRate
 
-    class BitpayAdapter < Adapter
-      
+    class BitpayAdapter < BitcoinAdapter
+
       FETCH_URL = 'https://bitpay.com/api/rates'
 
       def rate_for(currency_code)
@@ -13,7 +13,7 @@ module Straight
             return rate_to_f(rate)
           end
         end
-        raise CurrencyNotSupported 
+        raise CurrencyNotSupported
       end
 
     end

@@ -1,8 +1,8 @@
 module Straight
   module ExchangeRate
 
-    class CoinbaseAdapter < Adapter
-      
+    class CoinbaseAdapter < BitcoinAdapter
+
       FETCH_URL = 'https://coinbase.com/api/v1/currencies/exchange_rates'
 
       def rate_for(currency_code)

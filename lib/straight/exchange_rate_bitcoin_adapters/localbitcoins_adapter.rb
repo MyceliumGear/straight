@@ -1,8 +1,8 @@
 module Straight
   module ExchangeRate
 
-    class LocalbitcoinsAdapter < Adapter
-      
+    class LocalbitcoinsAdapter < BitcoinAdapter
+
       FETCH_URL = 'https://localbitcoins.com/bitcoinaverage/ticker-all-currencies/'
 
       def rate_for(currency_code)
