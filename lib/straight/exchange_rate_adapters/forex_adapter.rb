@@ -16,6 +16,11 @@ module Straight
         # call 'super' in descendant classes and return real rate
       end
 
+      def convert_from_currency(amount_in_currency, currency: CROSS_RATE_CURRENCY)
+        return amount_in_currency if currency == CROSS_RATE_CURRENCY
+        amount_in_currency.to_f / rate_for(currency)
+      end
+
     end
 
   end
