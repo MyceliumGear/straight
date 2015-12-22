@@ -1,7 +1,7 @@
 module Straight
   module ExchangeRate
 
-    class AverageRateAdapter < BitcoinAdapter
+    class AverageRateAdapter < BtcAdapter
 
       # Takes exchange rate adapters instances or classes as arguments
       def self.instance(*adapters)

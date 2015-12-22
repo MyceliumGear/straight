@@ -1,6 +1,6 @@
 module Straight
   module ExchangeRate
-    class FixerAdapter < ForexAdapter
+    class FixerAdapter < FiatAdapter
       FETCH_URL = "http://api.fixer.io/latest?base=#{CROSS_RATE_CURRENCY}"
 
       def rate_for(currency_code)

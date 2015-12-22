@@ -167,7 +167,7 @@ module Straight
             a.convert_from_currency(amount, currency: currency)
           end
           try_adapters(@exchange_rate_adapters, type: "exchange rate") do |a|
-            a.convert_from_currency(amount_in_cross_currency, currency: Straight::ExchangeRate::ForexAdapter::CROSS_RATE_CURRENCY)
+            a.convert_from_currency(amount_in_cross_currency, currency: Straight::ExchangeRate::FiatAdapter::CROSS_RATE_CURRENCY)
           end
         end
       end

@@ -1,7 +1,7 @@
 module Straight
   module ExchangeRate
 
-    class BitpayAdapter < BitcoinAdapter
+    class BitpayAdapter < BtcAdapter
 
       FETCH_URL = 'https://bitpay.com/api/rates'
 

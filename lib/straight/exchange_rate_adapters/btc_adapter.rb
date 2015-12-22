@@ -1,7 +1,7 @@
 module Straight
   module ExchangeRate
 
-    class BitcoinAdapter < Adapter
+    class BtcAdapter < Adapter
 
       def convert_from_currency(amount_in_currency, btc_denomination: :satoshi, currency: 'USD')
         btc_amount = amount_in_currency.to_f/rate_for(currency)

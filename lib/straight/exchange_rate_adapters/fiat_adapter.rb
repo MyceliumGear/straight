@@ -1,7 +1,7 @@
 module Straight
   module ExchangeRate
 
-    class ForexAdapter < Adapter
+    class FiatAdapter < Adapter
 
       CROSS_RATE_CURRENCY = 'USD'
       DECIMAL_PRECISION = 2

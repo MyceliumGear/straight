@@ -1,7 +1,7 @@
 module Straight
   module ExchangeRate
 
-    class LocalbitcoinsAdapter < BitcoinAdapter
+    class LocalbitcoinsAdapter < BtcAdapter
 
       FETCH_URL = 'https://localbitcoins.com/bitcoinaverage/ticker-all-currencies/'
 

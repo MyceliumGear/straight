@@ -1,7 +1,7 @@
 module Straight
   module ExchangeRate
 
-    class KrakenAdapter < BitcoinAdapter
+    class KrakenAdapter < BtcAdapter
 
       FETCH_URL = 'https://api.kraken.com/0/public/Ticker?pair=xbtusd'
 

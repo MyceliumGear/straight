@@ -1,7 +1,7 @@
 module Straight
   module ExchangeRate
 
-    class BitstampAdapter < BitcoinAdapter
+    class BitstampAdapter < BtcAdapter
 
       FETCH_URL = 'https://www.bitstamp.net/api/ticker/'
 

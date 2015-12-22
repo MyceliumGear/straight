@@ -1,7 +1,7 @@
 module Straight
   module ExchangeRate
 
-    class CoinbaseAdapter < BitcoinAdapter
+    class CoinbaseAdapter < BtcAdapter
 
       FETCH_URL = 'https://coinbase.com/api/v1/currencies/exchange_rates'
 
