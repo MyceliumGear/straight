@@ -4,6 +4,10 @@ module Straight
     class FiatAdapter < Adapter
 
       CROSS_RATE_CURRENCY = 'USD'
+      SUPPORTED_CURRENCIES = %w(
+        AUD BGN BRL CAD CHF CNY CZK DKK GBP HKD HRK HUF IDR ILS INR JPY
+        KRW MXN MYR NOK NZD PHP PLN RON RUB SEK SGD THB TRY USD ZAR
+      )
       DECIMAL_PRECISION = 2
 
       # Set half-even rounding mode
@@ -12,6 +16,7 @@ module Straight
 
       def rate_for(currency_code)
         return 1 if currency_code == CROSS_RATE_CURRENCY
+        raise CurrencyNotSupported unless SUPPORTED_CURRENCIES.include?(currency_code)
         super
         # call 'super' in descendant classes and return real rate
       end

@@ -45,6 +45,7 @@ require_relative 'straight/exchange_rate_adapters/btc_adapters/average_rate_adap
 
 require_relative 'straight/exchange_rate_adapters/fiat_adapter'
 require_relative 'straight/exchange_rate_adapters/fiat_adapters/fixer_adapter'
+require_relative 'straight/exchange_rate_adapters/fiat_adapters/yahoo_adapter'
 
 require_relative 'straight/address_providers/bip32'
 
