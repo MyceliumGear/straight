@@ -31,13 +31,7 @@ module Straight
       # This method will get value we are interested in from hash and
       # prevent failing with 'undefined method [] for Nil' if at some point hash doesn't have such key value pair
       def get_rate_value_from_hash(rates_hash, *keys)
-        keys.inject(rates_hash) do |intermediate, key|
-          if intermediate.respond_to?(:[])
-            intermediate[key]
-          else
-            raise CurrencyNotSupported
-          end
-        end
+        rates_hash.deep_get(*keys) || raise(CurrencyNotSupported)
       end
 
       # We dont want to have false positive rate, because nil.to_f is 0.0

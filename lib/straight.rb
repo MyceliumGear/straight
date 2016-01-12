@@ -21,6 +21,8 @@ module Straight
   end
 end
 
+require_relative 'core_ext/deep_get'
+
 require_relative 'straight/blockchain_adapter'
 require_relative 'straight/blockchain_adapters_dispatcher'
 require_relative 'straight/blockchain_adapters/blockchain_info_adapter'
