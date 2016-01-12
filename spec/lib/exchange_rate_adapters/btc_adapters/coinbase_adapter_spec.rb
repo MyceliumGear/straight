@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe Straight::ExchangeRate::CoinbaseAdapter do
 
   before :all do
-    VCR.insert_cassette 'exchange_rate_adapters/bitcoin_adapters/coinbase_adapter'
+    VCR.insert_cassette 'exchange_rate_adapters/btc_adapters/coinbase_adapter'
   end
 
   after :all do

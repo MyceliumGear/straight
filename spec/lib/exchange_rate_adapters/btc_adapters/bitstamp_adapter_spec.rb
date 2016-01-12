@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe Straight::ExchangeRate::BitstampAdapter do
 
   before :all do
-    VCR.insert_cassette 'exchange_rate_adapters/bitcoin_adapters/bitstamp_adapter'
+    VCR.insert_cassette 'exchange_rate_adapters/btc_adapters/bitstamp_adapter'
   end
 
   after :all do

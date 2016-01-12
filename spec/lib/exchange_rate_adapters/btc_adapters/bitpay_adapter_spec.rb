@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe Straight::ExchangeRate::BitpayAdapter do
 
   before :all do
-    VCR.insert_cassette 'exchange_rate_adapters/bitcoin_adapters/bitpay_adapter.yml'
+    VCR.insert_cassette 'exchange_rate_adapters/btc_adapters/bitpay_adapter.yml'
   end
 
   after :all do
