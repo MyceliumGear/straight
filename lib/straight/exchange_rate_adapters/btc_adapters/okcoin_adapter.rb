@@ -1,8 +1,8 @@
 module Straight
   module ExchangeRate
 
-    class OkcoinAdapter < Adapter
-      
+    class OkcoinAdapter < BtcAdapter
+
       FETCH_URL = 'https://www.okcoin.com/api/ticker.do?ok=1'
 
       def rate_for(currency_code)

@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe Straight::ExchangeRate::LocalbitcoinsAdapter do
 
   before :all do
-    VCR.insert_cassette 'exchange_rate_localbitcoins_adapter'
+    VCR.insert_cassette 'exchange_rate_adapters/btc_adapters/localbitcoins_adapter'
   end
 
   after :all do

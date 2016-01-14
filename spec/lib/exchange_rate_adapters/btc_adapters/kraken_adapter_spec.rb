@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe Straight::ExchangeRate::KrakenAdapter do
 
   before :all do
-    VCR.insert_cassette 'exchange_rate_kraken_adapter'
+    VCR.insert_cassette 'exchange_rate_adapters/btc_adapters/kraken_adapter'
   end
 
   after :all do

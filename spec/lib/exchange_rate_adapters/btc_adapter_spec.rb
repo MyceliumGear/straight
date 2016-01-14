@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-RSpec.describe Straight::ExchangeRate::Adapter do
+RSpec.describe Straight::ExchangeRate::BtcAdapter do
 
   class Straight::ExchangeRate::Adapter
     FETCH_URL = ''
   end
 
   before(:each) do
-    @exchange_adapter = Straight::ExchangeRate::Adapter.instance
+    @exchange_adapter = Straight::ExchangeRate::BtcAdapter.instance
   end
 
   describe "converting currencies" do

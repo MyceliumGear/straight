@@ -1,8 +1,8 @@
 module Straight
   module ExchangeRate
 
-    class KrakenAdapter < Adapter
-      
+    class KrakenAdapter < BtcAdapter
+
       FETCH_URL = 'https://api.kraken.com/0/public/Ticker?pair=xbtusd'
 
       def rate_for(currency_code)

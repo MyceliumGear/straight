@@ -33,7 +33,8 @@ module Straight
           :status_check_schedule,
           :blockchain_adapters,
           :test_blockchain_adapters,
-          :exchange_rate_adapters,
+          :exchange_rate_adapters, # TODO: rename to 'bitcoin_exchange_rate_adapters'
+          :forex_rate_adapters,
           :order_callbacks,
           :order_class,
           :default_currency,
@@ -81,13 +82,13 @@ module Straight
       def new_order(args)
 
         # Args: amount:, keychain_id: nil, currency: nil, btc_denomination: :satoshi
-        # 
+        #
         # The reason these arguments are supplied as a hash and not as named arguments
         # is because we don't know in advance which arguments are required for a particular
         # AddressAdapter. So we accept all, check manually for required ones like :amount,
         # set default values where needed and then hand them all to address_adapter.
         if args[:amount].nil? || !args[:amount].kind_of?(Numeric) || args[:amount] <= 0
-          raise OrderAmountInvalid, "amount cannot be nil and should be more than 0" 
+          raise OrderAmountInvalid, "amount cannot be nil and should be more than 0"
         end
         # Setting default values
         args[:currency]         ||= default_currency
@@ -117,11 +118,11 @@ module Straight
       def fetch_transaction(tid, address: nil)
         Straight::BlockchainAdaptersDispatcher.new(blockchain_adapters) { |b| b.fetch_transaction(tid, address: address) }.result
       end
-      
+
       def fetch_transactions_for(address)
         Straight::BlockchainAdaptersDispatcher.new(blockchain_adapters) { |b| b.fetch_transactions_for(address) }.result
       end
-      
+
       def fetch_balance_for(address)
         Straight::BlockchainAdaptersDispatcher.new(blockchain_adapters) { |b| b.fetch_balance_for(address) }.result
       end
@@ -145,7 +146,7 @@ module Straight
 
       # Gets exchange rates from one of the exchange rate adapters,
       # then calculates how much BTC does the amount in the given currency represents.
-      # 
+      #
       # You can also feed this method various bitcoin denominations.
       # It will always return amount in Satoshis.
       def amount_from_exchange_rate(amount, currency:, btc_denomination: :satoshi)
@@ -156,8 +157,22 @@ module Straight
           return Satoshi.new(amount, from_unit: btc_denomination).to_i
         end
 
-        try_adapters(@exchange_rate_adapters, type: "exchange rate") do |a|
-          a.convert_from_currency(amount, currency: currency)
+        begin
+          try_adapters(
+            @exchange_rate_adapters,
+            type: "exchange rate",
+            priority_exception: Straight::ExchangeRate::Adapter::CurrencyNotSupported
+          ) do |a|
+            a.convert_from_currency(amount, currency: currency)
+          end
+        # At least one Bitcoin exchange adapter works, but none returned exchange rate for given currency
+        rescue Straight::ExchangeRate::Adapter::CurrencyNotSupported
+          amount_in_cross_currency = try_adapters(@forex_rate_adapters, type: "forex rate") do |a|
+            a.convert_from_currency(amount, currency: currency)
+          end
+          try_adapters(@exchange_rate_adapters, type: "exchange rate") do |a|
+            a.convert_from_currency(amount_in_cross_currency, currency: Straight::ExchangeRate::FiatAdapter::CROSS_RATE_CURRENCY)
+          end
         end
       end
 
@@ -183,21 +198,25 @@ module Straight
       private
 
         # Calls the block with each adapter until one of them does not fail.
-        # Fails with the last exception.
-        def try_adapters(adapters, type: nil, raise_exceptions: [], &block)
+        # Fails with the:
+        #   - priority_exception, if it is set and was raised at least once
+        #   - last exception otherwise
+        def try_adapters(adapters, type: nil, raise_exceptions: [], priority_exception: nil, &block)
 
           # TODO: specify which adapters are unavailable (blockchain or exchange rate)
           raise NoAdaptersAvailable, "the list of #{type} adapters is empty or nil" if adapters.nil? || adapters.empty?
 
           last_exception = nil
+          last_priority_exception = nil
+
           adapters.each_with_index do |adapter, index|
             begin
               result = yield(adapter)
-              last_exception = nil
               return result
             rescue => e
               raise e if raise_exceptions.include?(e)
               last_exception = e
+              last_priority_exception = e if priority_exception && e.is_a?(priority_exception)
               # let's not log error for the last adapter, it will be re-raised anyway
               unless index == adapters.size - 1
                 loglevel =
@@ -212,6 +231,7 @@ module Straight
               # If an exception wasn't re-raised, it passes on to the next adapter and attempts to call a method on it
             end
           end
+          raise last_priority_exception if last_priority_exception
           raise last_exception if last_exception
         end
 
@@ -231,13 +251,16 @@ module Straight
         Blockchain::MyceliumAdapter.mainnet_adapter,
       ]
       @exchange_rate_adapters = [
-        ExchangeRate::BitpayAdapter.instance, 
+        ExchangeRate::BitpayAdapter.instance,
         ExchangeRate::CoinbaseAdapter.instance,
         ExchangeRate::BitstampAdapter.instance,
         ExchangeRate::BtceAdapter.instance,
         ExchangeRate::KrakenAdapter.instance,
         ExchangeRate::LocalbitcoinsAdapter.instance,
         ExchangeRate::OkcoinAdapter.instance
+      ]
+      @forex_rate_adapters = [
+        ExchangeRate::FixerAdapter.instance
       ]
       @status_check_schedule = DEFAULT_STATUS_CHECK_SCHEDULE
       @address_provider = AddressProvider::Bip32.new(self)

@@ -1,8 +1,8 @@
 module Straight
   module ExchangeRate
 
-    class BitstampAdapter < Adapter
-      
+    class BitstampAdapter < BtcAdapter
+
       FETCH_URL = 'https://www.bitstamp.net/api/ticker/'
 
       def rate_for(currency_code)

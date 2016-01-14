@@ -1,0 +1,175 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: http://query.yahooapis.com/v1/public/yql?env=store://datatables.org/alltableswithkeys&format=json&q=SELECT%20*%20FROM%20yahoo.finance.xchange%20WHERE%20pair%20IN(%5B%22USDAUD%22,%20%22USDBGN%22,%20%22USDBRL%22,%20%22USDCAD%22,%20%22USDCHF%22,%20%22USDCNY%22,%20%22USDCZK%22,%20%22USDDKK%22,%20%22USDGBP%22,%20%22USDHKD%22,%20%22USDHRK%22,%20%22USDHUF%22,%20%22USDIDR%22,%20%22USDILS%22,%20%22USDINR%22,%20%22USDJPY%22,%20%22USDKRW%22,%20%22USDMXN%22,%20%22USDMYR%22,%20%22USDNOK%22,%20%22USDNZD%22,%20%22USDPHP%22,%20%22USDPLN%22,%20%22USDRON%22,%20%22USDRUB%22,%20%22USDSEK%22,%20%22USDSGD%22,%20%22USDTHB%22,%20%22USDTRY%22,%20%22USDUSD%22,%20%22USDZAR%22%5D)
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 400
+      message: Bad Request
+    headers:
+      X-Yql-Host:
+      - main-a9c57bfe-b8f8-11e5-89b6-d89d676f9644
+      X-Content-Type-Options:
+      - nosniff
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 12 Jan 2016 13:22:31 GMT
+      Age:
+      - '0'
+      Server:
+      - ATS
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: '{"error":{"lang":"en-US","description":"Query syntax error(s) [line
+        1:50 no viable alternative at character ''['',line 1:359 no viable alternative
+        at character '']'']"}}'
+    http_version: 
+  recorded_at: Tue, 12 Jan 2016 13:22:31 GMT
+- request:
+    method: get
+    uri: http://query.yahooapis.com/v1/public/yql?env=store://datatables.org/alltableswithkeys&format=json&q=SELECT%20*%20FROM%20yahoo.finance.xchange%20WHERE%20pair%20IN(%5B%22%5C%22USDAUD%5C%22%22,%20%22%5C%22USDBGN%5C%22%22,%20%22%5C%22USDBRL%5C%22%22,%20%22%5C%22USDCAD%5C%22%22,%20%22%5C%22USDCHF%5C%22%22,%20%22%5C%22USDCNY%5C%22%22,%20%22%5C%22USDCZK%5C%22%22,%20%22%5C%22USDDKK%5C%22%22,%20%22%5C%22USDGBP%5C%22%22,%20%22%5C%22USDHKD%5C%22%22,%20%22%5C%22USDHRK%5C%22%22,%20%22%5C%22USDHUF%5C%22%22,%20%22%5C%22USDIDR%5C%22%22,%20%22%5C%22USDILS%5C%22%22,%20%22%5C%22USDINR%5C%22%22,%20%22%5C%22USDJPY%5C%22%22,%20%22%5C%22USDKRW%5C%22%22,%20%22%5C%22USDMXN%5C%22%22,%20%22%5C%22USDMYR%5C%22%22,%20%22%5C%22USDNOK%5C%22%22,%20%22%5C%22USDNZD%5C%22%22,%20%22%5C%22USDPHP%5C%22%22,%20%22%5C%22USDPLN%5C%22%22,%20%22%5C%22USDRON%5C%22%22,%20%22%5C%22USDRUB%5C%22%22,%20%22%5C%22USDSEK%5C%22%22,%20%22%5C%22USDSGD%5C%22%22,%20%22%5C%22USDTHB%5C%22%22,%20%22%5C%22USDTRY%5C%22%22,%20%22%5C%22USDUSD%5C%22%22,%20%22%5C%22USDZAR%5C%22%22%5D.join(%27,%27))
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 400
+      message: Bad Request
+    headers:
+      X-Yql-Host:
+      - main-a9e427bd-b8f8-11e5-89b6-d89d676f9644
+      X-Content-Type-Options:
+      - nosniff
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 12 Jan 2016 13:24:08 GMT
+      Age:
+      - '0'
+      Server:
+      - ATS
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: '{"error":{"lang":"en-US","description":"Query syntax error(s) [line
+        1:50 no viable alternative at character ''['',line 1:483 no viable alternative
+        at character '']'']"}}'
+    http_version: 
+  recorded_at: Tue, 12 Jan 2016 13:24:08 GMT
+- request:
+    method: get
+    uri: http://query.yahooapis.com/v1/public/yql?env=store://datatables.org/alltableswithkeys&format=json&q=SELECT%20*%20FROM%20yahoo.finance.xchange%20WHERE%20pair%20IN(%22USDAUD%22,%22USDBGN%22,%22USDBRL%22,%22USDCAD%22,%22USDCHF%22,%22USDCNY%22,%22USDCZK%22,%22USDDKK%22,%22USDGBP%22,%22USDHKD%22,%22USDHRK%22,%22USDHUF%22,%22USDIDR%22,%22USDILS%22,%22USDINR%22,%22USDJPY%22,%22USDKRW%22,%22USDMXN%22,%22USDMYR%22,%22USDNOK%22,%22USDNZD%22,%22USDPHP%22,%22USDPLN%22,%22USDRON%22,%22USDRUB%22,%22USDSEK%22,%22USDSGD%22,%22USDTHB%22,%22USDTRY%22,%22USDUSD%22,%22USDZAR%22)
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      X-Yql-Host:
+      - main-5514c559-b8f9-11e5-89b6-d89d676f9644
+      X-Content-Type-Options:
+      - nosniff
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Type:
+      - application/json; charset=UTF-8
+      Cache-Control:
+      - no-cache
+      Date:
+      - Tue, 12 Jan 2016 13:24:32 GMT
+      Age:
+      - '0'
+      Server:
+      - ATS
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: '{"query":{"count":31,"created":"2016-01-12T13:24:32Z","lang":"en-US","results":{"rate":[{"id":"USDAUD","Name":"USD/AUD","Rate":"1.4269","Date":"1/12/2016","Time":"1:24pm","Ask":"1.4273","Bid":"1.4269"},{"id":"USDBGN","Name":"USD/BGN","Rate":"1.8024","Date":"1/12/2016","Time":"1:23pm","Ask":"1.8096","Bid":"1.8024"},{"id":"USDBRL","Name":"USD/BRL","Rate":"4.0287","Date":"1/12/2016","Time":"1:24pm","Ask":"4.0298","Bid":"4.0287"},{"id":"USDCAD","Name":"USD/CAD","Rate":"1.4182","Date":"1/12/2016","Time":"1:24pm","Ask":"1.4182","Bid":"1.4182"},{"id":"USDCHF","Name":"USD/CHF","Rate":"1.0012","Date":"1/12/2016","Time":"1:24pm","Ask":"1.0013","Bid":"1.0012"},{"id":"USDCNY","Name":"USD/CNY","Rate":"6.5777","Date":"1/12/2016","Time":"1:24pm","Ask":"6.5788","Bid":"6.5777"},{"id":"USDCZK","Name":"USD/CZK","Rate":"24.9290","Date":"1/12/2016","Time":"1:24pm","Ask":"24.9320","Bid":"24.9290"},{"id":"USDDKK","Name":"USD/DKK","Rate":"6.8835","Date":"1/12/2016","Time":"1:24pm","Ask":"6.8838","Bid":"6.8835"},{"id":"USDGBP","Name":"USD/GBP","Rate":"0.6931","Date":"1/12/2016","Time":"1:24pm","Ask":"0.6932","Bid":"0.6931"},{"id":"USDHKD","Name":"USD/HKD","Rate":"7.7608","Date":"1/12/2016","Time":"1:24pm","Ask":"7.7609","Bid":"7.7608"},{"id":"USDHRK","Name":"USD/HRK","Rate":"7.0765","Date":"1/12/2016","Time":"1:24pm","Ask":"7.1134","Bid":"7.0765"},{"id":"USDHUF","Name":"USD/HUF","Rate":"292.7350","Date":"1/12/2016","Time":"1:24pm","Ask":"292.8400","Bid":"292.7350"},{"id":"USDIDR","Name":"USD/IDR","Rate":"13805.0000","Date":"1/12/2016","Time":"1:23pm","Ask":"13810.0000","Bid":"13805.0000"},{"id":"USDILS","Name":"USD/ILS","Rate":"3.9374","Date":"1/12/2016","Time":"1:24pm","Ask":"3.9390","Bid":"3.9374"},{"id":"USDINR","Name":"USD/INR","Rate":"66.8875","Date":"1/12/2016","Time":"1:24pm","Ask":"66.8950","Bid":"66.8875"},{"id":"USDJPY","Name":"USD/JPY","Rate":"117.9190","Date":"1/12/2016","Time":"1:24pm","Ask":"117.9210","Bid":"117.9190"},{"id":"USDKRW","Name":"USD/KRW","Rate":"1208.1949","Date":"1/12/2016","Time":"1:23pm","Ask":"1209.5000","Bid":"1208.1949"},{"id":"USDMXN","Name":"USD/MXN","Rate":"17.7619","Date":"1/12/2016","Time":"1:24pm","Ask":"17.7722","Bid":"17.7619"},{"id":"USDMYR","Name":"USD/MYR","Rate":"4.3823","Date":"1/12/2016","Time":"1:23pm","Ask":"4.3886","Bid":"4.3823"},{"id":"USDNOK","Name":"USD/NOK","Rate":"8.8785","Date":"1/12/2016","Time":"1:24pm","Ask":"8.8804","Bid":"8.8785"},{"id":"USDNZD","Name":"USD/NZD","Rate":"1.5277","Date":"1/12/2016","Time":"1:24pm","Ask":"1.5283","Bid":"1.5277"},{"id":"USDPHP","Name":"USD/PHP","Rate":"47.3405","Date":"1/12/2016","Time":"1:24pm","Ask":"47.3860","Bid":"47.3405"},{"id":"USDPLN","Name":"USD/PLN","Rate":"4.0184","Date":"1/12/2016","Time":"1:24pm","Ask":"4.0194","Bid":"4.0184"},{"id":"USDRON","Name":"USD/RON","Rate":"4.1823","Date":"1/12/2016","Time":"1:24pm","Ask":"4.1856","Bid":"4.1823"},{"id":"USDRUB","Name":"USD/RUB","Rate":"76.2645","Date":"1/12/2016","Time":"1:24pm","Ask":"76.2800","Bid":"76.2645"},{"id":"USDSEK","Name":"USD/SEK","Rate":"8.5315","Date":"1/12/2016","Time":"1:24pm","Ask":"8.5324","Bid":"8.5315"},{"id":"USDSGD","Name":"USD/SGD","Rate":"1.4368","Date":"1/12/2016","Time":"1:24pm","Ask":"1.4372","Bid":"1.4368"},{"id":"USDTHB","Name":"USD/THB","Rate":"36.3205","Date":"1/12/2016","Time":"1:24pm","Ask":"36.3460","Bid":"36.3205"},{"id":"USDTRY","Name":"USD/TRY","Rate":"3.0273","Date":"1/12/2016","Time":"1:24pm","Ask":"3.0278","Bid":"3.0273"},{"id":"USDUSD","Name":"USD/USD","Rate":"1.0000","Date":"N/A","Time":"N/A","Ask":"1.0000","Bid":"1.0000"},{"id":"USDZAR","Name":"USD/ZAR","Rate":"16.5592","Date":"1/12/2016","Time":"1:24pm","Ask":"16.5630","Bid":"16.5592"}]}}}'
+    http_version: 
+  recorded_at: Tue, 12 Jan 2016 13:24:32 GMT
+- request:
+    method: get
+    uri: http://query.yahooapis.com/v1/public/yql?env=store://datatables.org/alltableswithkeys&format=json&q=SELECT%20*%20FROM%20yahoo.finance.xchange%20WHERE%20pair%20IN(%22USDAUD%22,%22USDBGN%22,%22USDBRL%22,%22USDCAD%22,%22USDCHF%22,%22USDCNY%22,%22USDCZK%22,%22USDDKK%22,%22USDGBP%22,%22USDHKD%22,%22USDHRK%22,%22USDHUF%22,%22USDIDR%22,%22USDILS%22,%22USDINR%22,%22USDJPY%22,%22USDKRW%22,%22USDMXN%22,%22USDMYR%22,%22USDNOK%22,%22USDNZD%22,%22USDPHP%22,%22USDPLN%22,%22USDRON%22,%22USDRUB%22,%22USDSEK%22,%22USDSGD%22,%22USDTHB%22,%22USDTRY%22,%22USDUSD%22,%22USDZAR%22,%22USDEUR%22)
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      X-Yql-Host:
+      - main-9dc39976-b8f8-11e5-8399-56847afe9799
+      X-Content-Type-Options:
+      - nosniff
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Type:
+      - application/json; charset=UTF-8
+      Cache-Control:
+      - no-cache
+      Date:
+      - Thu, 14 Jan 2016 07:57:45 GMT
+      Age:
+      - '0'
+      Server:
+      - ATS
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: '{"query":{"count":32,"created":"2016-01-14T07:57:45Z","lang":"en-US","results":{"rate":[{"id":"USDAUD","Name":"USD/AUD","Rate":"1.4368","Date":"1/14/2016","Time":"7:57am","Ask":"1.4369","Bid":"1.4368"},{"id":"USDBGN","Name":"USD/BGN","Rate":"1.7981","Date":"1/14/2016","Time":"7:57am","Ask":"1.8074","Bid":"1.7981"},{"id":"USDBRL","Name":"USD/BRL","Rate":"4.0183","Date":"1/14/2016","Time":"7:57am","Ask":"4.0198","Bid":"4.0183"},{"id":"USDCAD","Name":"USD/CAD","Rate":"1.4350","Date":"1/14/2016","Time":"7:57am","Ask":"1.4352","Bid":"1.4350"},{"id":"USDCHF","Name":"USD/CHF","Rate":"1.0085","Date":"1/14/2016","Time":"7:57am","Ask":"1.0085","Bid":"1.0085"},{"id":"USDCNY","Name":"USD/CNY","Rate":"6.5903","Date":"1/14/2016","Time":"7:57am","Ask":"6.5914","Bid":"6.5903"},{"id":"USDCZK","Name":"USD/CZK","Rate":"24.8865","Date":"1/14/2016","Time":"7:57am","Ask":"24.8900","Bid":"24.8865"},{"id":"USDDKK","Name":"USD/DKK","Rate":"6.8726","Date":"1/14/2016","Time":"7:57am","Ask":"6.8738","Bid":"6.8726"},{"id":"USDGBP","Name":"USD/GBP","Rate":"0.6944","Date":"1/14/2016","Time":"7:57am","Ask":"0.6944","Bid":"0.6944"},{"id":"USDHKD","Name":"USD/HKD","Rate":"7.7689","Date":"1/14/2016","Time":"7:57am","Ask":"7.7702","Bid":"7.7689"},{"id":"USDHRK","Name":"USD/HRK","Rate":"7.0658","Date":"1/14/2016","Time":"7:57am","Ask":"7.1036","Bid":"7.0658"},{"id":"USDHUF","Name":"USD/HUF","Rate":"290.4150","Date":"1/14/2016","Time":"7:57am","Ask":"290.5200","Bid":"290.4150"},{"id":"USDIDR","Name":"USD/IDR","Rate":"13855.0000","Date":"1/14/2016","Time":"7:57am","Ask":"13870.0000","Bid":"13855.0000"},{"id":"USDILS","Name":"USD/ILS","Rate":"3.9390","Date":"1/14/2016","Time":"7:57am","Ask":"3.9398","Bid":"3.9390"},{"id":"USDINR","Name":"USD/INR","Rate":"67.0704","Date":"1/14/2016","Time":"7:57am","Ask":"67.0780","Bid":"67.0704"},{"id":"USDJPY","Name":"USD/JPY","Rate":"118.1050","Date":"1/14/2016","Time":"7:57am","Ask":"118.1200","Bid":"118.1050"},{"id":"USDKRW","Name":"USD/KRW","Rate":"1212.1450","Date":"1/14/2016","Time":"7:57am","Ask":"1213.4000","Bid":"1212.1450"},{"id":"USDMXN","Name":"USD/MXN","Rate":"17.9009","Date":"1/14/2016","Time":"7:57am","Ask":"17.9050","Bid":"17.9009"},{"id":"USDMYR","Name":"USD/MYR","Rate":"4.3890","Date":"1/14/2016","Time":"7:57am","Ask":"4.3894","Bid":"4.3890"},{"id":"USDNOK","Name":"USD/NOK","Rate":"8.8392","Date":"1/14/2016","Time":"7:57am","Ask":"8.8408","Bid":"8.8392"},{"id":"USDNZD","Name":"USD/NZD","Rate":"1.5383","Date":"1/14/2016","Time":"7:57am","Ask":"1.5384","Bid":"1.5383"},{"id":"USDPHP","Name":"USD/PHP","Rate":"47.7445","Date":"1/14/2016","Time":"7:57am","Ask":"47.8000","Bid":"47.7445"},{"id":"USDPLN","Name":"USD/PLN","Rate":"4.0025","Date":"1/14/2016","Time":"7:57am","Ask":"4.0030","Bid":"4.0025"},{"id":"USDRON","Name":"USD/RON","Rate":"4.1757","Date":"1/14/2016","Time":"7:57am","Ask":"4.1820","Bid":"4.1757"},{"id":"USDRUB","Name":"USD/RUB","Rate":"76.4045","Date":"1/14/2016","Time":"7:57am","Ask":"76.4200","Bid":"76.4045"},{"id":"USDSEK","Name":"USD/SEK","Rate":"8.5315","Date":"1/14/2016","Time":"7:57am","Ask":"8.5326","Bid":"8.5315"},{"id":"USDSGD","Name":"USD/SGD","Rate":"1.4382","Date":"1/14/2016","Time":"7:57am","Ask":"1.4384","Bid":"1.4382"},{"id":"USDTHB","Name":"USD/THB","Rate":"36.2865","Date":"1/14/2016","Time":"7:57am","Ask":"36.3560","Bid":"36.2865"},{"id":"USDTRY","Name":"USD/TRY","Rate":"3.0208","Date":"1/14/2016","Time":"7:57am","Ask":"3.0214","Bid":"3.0208"},{"id":"USDUSD","Name":"USD/USD","Rate":"1.0000","Date":"N/A","Time":"N/A","Ask":"1.0000","Bid":"1.0000"},{"id":"USDZAR","Name":"USD/ZAR","Rate":"16.5548","Date":"1/14/2016","Time":"7:57am","Ask":"16.5650","Bid":"16.5548"},{"id":"USDEUR","Name":"USD/EUR","Rate":"0.9210","Date":"1/14/2016","Time":"7:57am","Ask":"0.9211","Bid":"0.9210"}]}}}'
+    http_version: 
+  recorded_at: Thu, 14 Jan 2016 07:57:45 GMT
+recorded_with: VCR 2.9.3

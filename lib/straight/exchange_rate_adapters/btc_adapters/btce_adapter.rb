@@ -1,8 +1,8 @@
 module Straight
   module ExchangeRate
 
-    class BtceAdapter < Adapter
-      
+    class BtceAdapter < BtcAdapter
+
       FETCH_URL = 'https://btc-e.com/api/2/btc_usd/ticker'
 
       def rate_for(currency_code)
