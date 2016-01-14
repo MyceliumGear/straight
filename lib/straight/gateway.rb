@@ -158,7 +158,11 @@ module Straight
         end
 
         begin
-          try_adapters(@exchange_rate_adapters, type: "exchange rate", priority_exception: Straight::ExchangeRate::Adapter::CurrencyNotSupported) do |a|
+          try_adapters(
+            @exchange_rate_adapters,
+            type: "exchange rate",
+            priority_exception: Straight::ExchangeRate::Adapter::CurrencyNotSupported
+          ) do |a|
             a.convert_from_currency(amount, currency: currency)
           end
         # At least one Bitcoin exchange adapter works, but none returned exchange rate for given currency
