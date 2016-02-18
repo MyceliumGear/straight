@@ -91,6 +91,15 @@ module Straight
           raise OrderAmountInvalid, "amount cannot be nil and should be more than 0"
         end
         # Setting default values
+
+        if address_provider.takes_fees? &&
+            !address_provider.currency_supported?(args[:currency])
+          supported_currency = select_supported_currency_by_address_provider
+          args[:amount] = convert_amount_to_supported_currency(args[:amount],
+            args[:currency], supported_currency)
+          args[:currency] = supported_currency
+        end
+
         args[:currency]         ||= default_currency
         args[:btc_denomination] ||= :satoshi
 
@@ -196,6 +205,18 @@ module Straight
       end
 
       private
+
+        def select_supported_currency_by_address_provider
+          address_provider.class::SUPPORTED_CURRENCIES.first
+        end
+
+        def convert_amount_to_supported_currency(amount, currency, supported_currency)
+          adapter = ExchangeRate::FixerAdapter.instance
+          rate_for_supported_currency = adapter.rate_for(supported_currency)
+          rate_for_currency = adapter.rate_for(currency)
+
+          (amount * rate_for_supported_currency) / rate_for_currency
+        end
 
         # Calls the block with each adapter until one of them does not fail.
         # Fails with the:

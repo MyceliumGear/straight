@@ -74,6 +74,18 @@ RSpec.describe Straight::Gateway do
     @gateway.order_status_changed(order)
   end
 
+  describe "when the address provider doesn't support the selected currency" do
+    it "converts the currency to one the address provider supports" do
+      @gateway.address_provider = AddressProvider.new(provider: :cashila)
+      allow(@gateway.address_provider).to receive(:new_address_and_amount)
+      allow(@gateway).to receive(:select_supported_currency_by_address_provider).
+        and_return("EUR")
+      expect(@gateway).to receive(:amount_from_exchange_rate).
+        with(0.91996, currency: "EUR", btc_denomination: :satoshi)
+      @gateway.new_order(amount: 1, keychain_id: 1, currency: "USD")
+    end
+  end
+
   describe "exchange rate calculation" do
 
     it "sets order amount in satoshis calculated from another currency" do
@@ -152,4 +164,14 @@ RSpec.describe Straight::Gateway do
 
   end
 
+end
+
+AddressProvider = Struct.new(:provider) do
+  def takes_fees?
+    true
+  end
+
+  def currency_supported?(currency)
+    currency == "EUR"
+  end
 end
