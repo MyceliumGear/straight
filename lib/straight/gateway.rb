@@ -244,24 +244,39 @@ module Straight
 
     include GatewayModule
 
+    class << self
+      def available_blockchain_adapters
+        [
+          Blockchain::BlockchainInfoAdapter.mainnet_adapter,
+          Blockchain::MyceliumAdapter.mainnet_adapter
+        ]
+      end
+
+      def available_exchange_rate_adapters
+        [
+          ExchangeRate::BitpayAdapter.instance,
+          ExchangeRate::CoinbaseAdapter.instance,
+          ExchangeRate::BitstampAdapter.instance,
+          ExchangeRate::BtceAdapter.instance,
+          ExchangeRate::KrakenAdapter.instance,
+          ExchangeRate::LocalbitcoinsAdapter.instance,
+          ExchangeRate::OkcoinAdapter.instance
+        ]
+      end
+
+      def available_forex_rate_adapters
+        [
+          ExchangeRate::FixerAdapter.instance,
+          ExchangeRate::YahooAdapter.instance
+        ]
+      end
+    end
+
     def initialize
       @default_currency = 'BTC'
-      @blockchain_adapters = [
-        Blockchain::BlockchainInfoAdapter.mainnet_adapter,
-        Blockchain::MyceliumAdapter.mainnet_adapter,
-      ]
-      @exchange_rate_adapters = [
-        ExchangeRate::BitpayAdapter.instance,
-        ExchangeRate::CoinbaseAdapter.instance,
-        ExchangeRate::BitstampAdapter.instance,
-        ExchangeRate::BtceAdapter.instance,
-        ExchangeRate::KrakenAdapter.instance,
-        ExchangeRate::LocalbitcoinsAdapter.instance,
-        ExchangeRate::OkcoinAdapter.instance
-      ]
-      @forex_rate_adapters = [
-        ExchangeRate::FixerAdapter.instance
-      ]
+      @blockchain_adapters = self.class.available_blockchain_adapters
+      @exchange_rate_adapters = self.class.available_exchange_rate_adapters
+      @forex_rate_adapters = self.class.available_forex_rate_adapters
       @status_check_schedule = DEFAULT_STATUS_CHECK_SCHEDULE
       @address_provider = AddressProvider::Bip32.new(self)
       @test_mode = false
