@@ -29,6 +29,8 @@ module Straight
           amount_paid
           block_height_created_at
           callback_url
+          currency
+          exchange_rate
           gateway
           keychain_id
           status
