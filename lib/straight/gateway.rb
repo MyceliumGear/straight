@@ -112,6 +112,12 @@ module Straight
         order.address     = address
         order.amount      = amount
         order.block_height_created_at = fetch_latest_block_height rescue nil
+
+        unless args[:currency] == "BTC"
+          order.exchange_rate = current_exchange_rate(args[:currency])
+          order.currency = args[:currency]
+        end
+
         order
       end
 
