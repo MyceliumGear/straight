@@ -19,4 +19,8 @@ RSpec.describe Straight::ExchangeRate::FixerAdapter do
     expect( -> { @exchange_adapter.rate_for('KZT') }).to raise_error(Straight::ExchangeRate::Adapter::CurrencyNotSupported)
   end
 
+  it "returns 1.0 when the currency is the FiatAdapter::CROSS_RATE_CURRENCY" do
+    expect(@exchange_adapter.
+      rate_for(Straight::ExchangeRate::FiatAdapter::CROSS_RATE_CURRENCY)).to eq(1.0)
+  end
 end

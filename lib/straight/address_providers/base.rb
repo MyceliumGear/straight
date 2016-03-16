@@ -23,6 +23,12 @@ module Straight
       def takes_fees?
         false
       end
+
+      # Address provider is expected to define SUPPORTED_CURRENCIES as an
+      # Enumerable with valid currency codes. e.g. 'EUR', 'USD'
+      def currency_supported?(currency)
+        SUPPORTED_CURRENCIES.include?(currency)
+      end
     end
   end
 end
