@@ -80,7 +80,6 @@ module Straight
       # Creates a new order for the address derived from the pubkey and the keychain_id argument provided.
       # See explanation of this keychain_id argument is in the description for the AddressProvider::Base#new_address method.
       def new_order(args)
-
         # Args: amount:, keychain_id: nil, currency: nil, btc_denomination: :satoshi
         #
         # The reason these arguments are supplied as a hash and not as named arguments
@@ -90,40 +89,35 @@ module Straight
         if args[:amount].nil? || !args[:amount].kind_of?(Numeric) || args[:amount] <= 0
           raise OrderAmountInvalid, "amount cannot be nil and should be more than 0"
         end
-        # Setting default values
-        args[:currency]         ||= default_currency
-        args[:btc_denomination] ||= :satoshi
 
-        amount = args[:amount_from_exchange_rate] = amount_from_exchange_rate(
-          args[:amount],
-          currency:         args[:currency],
-          btc_denomination: args[:btc_denomination]
-        )
-
+        # Build order with default values
         order = Kernel.const_get(order_class).new
-
-        if address_provider.takes_fees?
-          address, amount = address_provider.new_address_and_amount(**args)
-
-          if args[:currency] != "BTC"
-            order.amount_with_currency =
-              format("%.2f %s", args[:amount], args[:currency])
-          end
-        else
-          address = address_provider.new_address(**args)
-
-          if args[:currency] != "BTC"
-            order.exchange_rate = current_exchange_rate(args[:currency])
-            order.currency = args[:currency]
-          end
-        end
-
-        order.gateway     = self
+        order.gateway = self
         order.keychain_id = args[:keychain_id]
-        order.address     = address
-        order.amount      = amount
+        order.currency = args[:currency] || default_currency
         order.block_height_created_at = fetch_latest_block_height rescue nil
 
+        args[:amount_from_exchange_rate] = amount_from_exchange_rate(
+          args[:amount],
+          currency: order.currency,
+          btc_denomination: args[:btc_denomination] || :satoshi,
+        )
+
+        order.amount = args[:amount_from_exchange_rate]
+
+        if address_provider.takes_fees?
+          order.address, order.amount =
+            address_provider.new_address_and_amount(**args)
+        else
+          order.address = address_provider.new_address(**args)
+        end
+
+        if address_provider.takes_fees? && order.currency != "BTC"
+          order.amount_with_currency =
+            format("%.2f %s", args[:amount], order.currency)
+        elsif order.currency != "BTC"
+          order.exchange_rate = current_exchange_rate(order.currency)
+        end
 
         order
       end
