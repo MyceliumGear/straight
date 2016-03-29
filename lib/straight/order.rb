@@ -27,6 +27,7 @@ module Straight
           address
           amount
           amount_paid
+          amount_with_currency
           block_height_created_at
           callback_url
           currency

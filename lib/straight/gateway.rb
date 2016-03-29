@@ -100,23 +100,30 @@ module Straight
           btc_denomination: args[:btc_denomination]
         )
 
+        order = Kernel.const_get(order_class).new
+
         if address_provider.takes_fees?
           address, amount = address_provider.new_address_and_amount(**args)
+
+          if args[:currency] != "BTC"
+            order.amount_with_currency =
+              format("%.2f %s", args[:amount], args[:currency])
+          end
         else
           address = address_provider.new_address(**args)
+
+          if args[:currency] != "BTC"
+            order.exchange_rate = current_exchange_rate(args[:currency])
+            order.currency = args[:currency]
+          end
         end
 
-        order             = Kernel.const_get(order_class).new
         order.gateway     = self
         order.keychain_id = args[:keychain_id]
         order.address     = address
         order.amount      = amount
         order.block_height_created_at = fetch_latest_block_height rescue nil
 
-        unless args[:currency] == "BTC"
-          order.exchange_rate = current_exchange_rate(args[:currency])
-          order.currency = args[:currency]
-        end
 
         order
       end
