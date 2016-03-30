@@ -94,12 +94,13 @@ module Straight
         order = Kernel.const_get(order_class).new
         order.gateway = self
         order.keychain_id = args[:keychain_id]
-        order.currency = args[:currency] || default_currency
         order.block_height_created_at = fetch_latest_block_height rescue nil
+
+         args[:currency] ||= default_currency
 
         args[:amount_from_exchange_rate] = amount_from_exchange_rate(
           args[:amount],
-          currency: order.currency,
+          currency: args[:currency],
           btc_denomination: args[:btc_denomination] || :satoshi,
         )
 
@@ -112,11 +113,9 @@ module Straight
           order.address = address_provider.new_address(**args)
         end
 
-        if address_provider.takes_fees? && order.currency != "BTC"
+        unless args[:currency] == "BTC"
           order.amount_with_currency =
-            format("%.2f %s", args[:amount], order.currency)
-        elsif order.currency != "BTC"
-          order.exchange_rate = current_exchange_rate(order.currency)
+            format("%.2f %s", args[:amount], args[:currency])
         end
 
         order
