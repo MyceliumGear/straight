@@ -96,21 +96,20 @@ module Straight
         order.keychain_id = args[:keychain_id]
         order.block_height_created_at = fetch_latest_block_height rescue nil
 
-         args[:currency] ||= default_currency
+        args[:currency] ||= default_currency
 
-        args[:amount_from_exchange_rate] = amount_from_exchange_rate(
-          args[:amount],
-          currency: args[:currency],
-          btc_denomination: args[:btc_denomination] || :satoshi,
-        )
-
-        order.amount = args[:amount_from_exchange_rate]
-
+        # Generates address and calculates amount in satoshi
         if address_provider.takes_fees?
           order.address, order.amount =
             address_provider.new_address_and_amount(**args)
         else
           order.address = address_provider.new_address(**args)
+          order.amount =
+            amount_from_exchange_rate(
+              args[:amount],
+              currency: args[:currency],
+              btc_denomination: args[:btc_denomination] || :satoshi,
+            )
         end
 
         unless args[:currency] == "BTC"
