@@ -62,6 +62,18 @@ RSpec.describe Straight::Gateway do
     expect(@gateway.new_order(amount: 1, keychain_id: 1).address).to eq(expected_address)
   end
 
+  it "when the currency is not BTC saves the order's amount with currency" do
+    @gateway.pubkey = BTC::Keychain.new(seed: "test").xpub
+    order = @gateway.new_order(amount: 15, keychain_id: 1, currency: "EUR")
+    expect(order.amount_with_currency).to eq("15.00 EUR")
+  end
+
+  it "when the currency is BTC doesn't save the order's amount with currency" do
+    @gateway.pubkey = BTC::Keychain.new(seed: "test").xpub
+    order = @gateway.new_order(amount: 15, keychain_id: 1)
+    expect(order.amount_with_currency).to be_nil
+  end
+
   it "calls all the order callbacks" do
     callback1                = double('callback1')
     callback2                = double('callback1')
