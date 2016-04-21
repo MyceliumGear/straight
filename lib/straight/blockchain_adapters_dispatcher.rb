@@ -13,6 +13,7 @@ module Straight
 
     def initialize(adapters, tasks_parallel_limit: 2, &block)
       @defer_result         = Concurrent::IVar.new
+      @pool                 = Concurrent::ThreadPoolExecutor.new
       @tasks_parallel_limit = tasks_parallel_limit
       @adapters             = adapters
       @result               = run_requests(block) if block_given?
@@ -25,23 +26,23 @@ module Straight
         raise @defer_result.reason if @defer_result.rejected?
         @defer_result.value
       end
+    ensure
+      @pool.kill
     end
-    
+
   private
 
     def execute_in_parallel(block, adapters)
       adapters_to_run  = adapters.shift(@tasks_parallel_limit)
       attempts_counter = Concurrent::MVar.new(adapters_to_run.size)
-      pool             = Concurrent::ThreadPoolExecutor.new
       adapters_to_run.each do |adapter|
-        p = Concurrent::Promise.new(executor: pool) {
+        p = Concurrent::Promise.new(executor: @pool) {
           Straight.logger.debug "Blockchain query via #{adapter.inspect}"
           block.call(adapter)
         }
         p.on_success do |result|
           Straight.logger.debug "Got blockchain query response via #{adapter.inspect}"
           @defer_result.set(result)
-          pool.kill
         end
         p.rescue do |reason|
           attempts_counter.modify { |v| v-1 }
