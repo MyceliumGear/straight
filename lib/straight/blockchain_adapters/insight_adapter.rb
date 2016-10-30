@@ -63,11 +63,12 @@ module Straight
       def straighten_transaction(transaction, address: nil)
         total_amount = 0
         tid = transaction["txid"]
-        transaction["vout"].each do |o|
+        vouts = transaction['vout'].select { |o| o && o['scriptPubKey'] && o['scriptPubKey']['addresses'] }
+        vouts.each do |o|
           total_amount += Satoshi.new(o["value"]) if address.nil? || address == o["scriptPubKey"]["addresses"].first
         end
         confirmations = transaction["confirmations"] 
-        outs = transaction["vout"].map { |o| {amount: Satoshi.new(o["value"]).to_i, receiving_address: o["scriptPubKey"]["addresses"].first} }
+        outs = vouts.map { |o| {amount: Satoshi.new(o["value"]).to_i, receiving_address: o["scriptPubKey"]["addresses"].first} }
         block = api_request("/block/", transaction['blockhash'])
 
         {
