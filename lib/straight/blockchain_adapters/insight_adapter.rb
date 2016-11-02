@@ -69,13 +69,12 @@ module Straight
         end
         confirmations = transaction["confirmations"] 
         outs = vouts.map { |o| {amount: Satoshi.new(o["value"]).to_i, receiving_address: o["scriptPubKey"]["addresses"].first} }
-        block = api_request("/block/", transaction['blockhash'])
 
         {
           tid:           tid,
           total_amount:  total_amount,
           confirmations: confirmations || 0,
-          block_height:  block['height'],
+          block_height:  transaction['blockheight'],
           outs:          outs || [],
           meta: {
             fetched_via: self,

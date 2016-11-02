@@ -45,7 +45,7 @@ module Straight
           @defer_result.set(result)
         end
         p.rescue do |reason|
-          Straight.logger.debug "Blockchain query failed: #{reason.inspect}"
+          Straight.logger.debug "Blockchain query failed: #{reason.inspect}\n#{reason.backtrace.join("\n") rescue nil}"
           attempts_counter.modify { |v| v-1 }
           @defer_result.fail(AdaptersError) if attempts_counter.value.zero? && adapters.empty?
           execute_in_parallel(block, adapters) if attempts_counter.value.zero?

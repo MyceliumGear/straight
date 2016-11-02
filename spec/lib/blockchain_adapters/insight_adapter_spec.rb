@@ -2,7 +2,7 @@ require 'spec_helper'
 
 RSpec.describe Straight::Blockchain::InsightAdapter do
 
-  subject(:mainnet_adapter) { Straight::Blockchain::InsightAdapter.mainnet_adapter(url: "https://insight.mycelium.com/api") }
+  subject(:mainnet_adapter) { Straight::Blockchain::InsightAdapter.mainnet_adapter(url: "https://insight.gear.mycelium.com/api") }
 
   before :all do
     VCR.configure do |c|
