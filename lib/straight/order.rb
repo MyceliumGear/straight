@@ -134,19 +134,22 @@ module Straight
 
         if !uniq_transactions.empty? && amount_paid <= 0
           Straight.logger.warn "Strange transactions for address #{address}: #{uniq_transactions.inspect}"
+          amount_paid = 0
         end
 
         status =
-          if uniq_transactions.empty?
-            STATUSES.fetch(:new)
-          elsif amount_paid >= amount && status_unconfirmed?(uniq_transactions)
-            STATUSES.fetch(:unconfirmed)
-          elsif amount_paid == amount
-            STATUSES.fetch(:paid)
-          elsif amount_paid < amount
-            STATUSES.fetch(:partially_paid)
+          if amount_paid > 0
+            if ((amount == 0) || (amount > 0 && amount_paid >= amount)) && status_unconfirmed?(uniq_transactions)
+              STATUSES.fetch(:unconfirmed)
+            elsif (amount == 0) || (amount > 0 && amount_paid == amount)
+              STATUSES.fetch(:paid)
+            elsif amount_paid < amount
+              STATUSES.fetch(:partially_paid)
+            elsif amount_paid > amount
+              STATUSES.fetch(:overpaid)
+            end
           else
-            STATUSES.fetch(:overpaid)
+            STATUSES.fetch(:new)
           end
 
         {amount_paid: amount_paid, accepted_transactions: uniq_transactions, status: status}
