@@ -42,7 +42,8 @@ module Straight
           :address_provider,
           :address_provider_type,
           :address_derivation_scheme,
-          :test_mode
+          :test_mode,
+          :donation_mode,
         ].each do |field|
           attr_reader field unless base.method_defined?(field)
           attr_writer field unless base.method_defined?("#{field}=")
