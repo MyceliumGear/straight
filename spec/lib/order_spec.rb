@@ -20,6 +20,7 @@ RSpec.describe Straight::Order do
     @order.keychain_id = 1
     allow(@gateway).to receive(:order_status_changed).with(@order)
     allow(@gateway).to receive(:fetch_transactions_for).with(@order.address).and_return([{ tid: 'xxx', total_amount: 10}])
+    allow(@gateway).to receive(:donation_mode).with(no_args).and_return(false)
   end
 
   it "follows status check schedule" do
@@ -87,6 +88,8 @@ RSpec.describe Straight::Order do
       transaction = Straight::Transaction.from_hash(confirmations: 0, total_amount: @order.amount)
       expect(@order).to receive(:transaction).at_most(3).times.and_return(transaction)
       expect(@order.status(reload: true)).to eq(1)
+      allow(@gateway).to receive(:donation_mode).with(no_args).and_return(true)
+      expect(@order.status(reload: true)).to eq(1)
     end
 
     it "sets status to :paid if transaction has enough confirmations and the amount is correct" do
@@ -94,6 +97,13 @@ RSpec.describe Straight::Order do
       expect(@order).to receive(:transaction).at_most(3).times.and_return(transaction)
       expect(@order.status(reload: true)).to eq(2)
       expect(@order.status(as_sym: true)).to eq :paid
+    end
+
+    it "sets status to :paid on any payment if gateway is in donation mode" do
+      allow(@gateway).to receive(:donation_mode).with(no_args).and_return(true)
+      transaction = Straight::Transaction.from_hash(confirmations: 1, total_amount: (@order.amount - (@order.amount / 2)))
+      expect(@order).to receive(:transaction).at_most(3).times.and_return(transaction)
+      expect(@order.status(reload: true)).to eq(2)
     end
 
     it "sets status to :partially_paid if the total amount in a transaction is less than the amount of order" do
@@ -184,4 +194,17 @@ RSpec.describe Straight::Order do
 
   end
 
+  describe "assigning statuses with zero confirmations_required" do
+
+    before(:each) do
+      allow(@gateway).to receive(:confirmations_required).and_return(0)
+    end
+
+    it "sets status to :paid on any payment if gateway is in donation mode" do
+      allow(@gateway).to receive(:donation_mode).with(no_args).and_return(true)
+      transaction = Straight::Transaction.from_hash(confirmations: 0, total_amount: (@order.amount - (@order.amount / 2)))
+      expect(@order).to receive(:transaction).at_most(3).times.and_return(transaction)
+      expect(@order.status(reload: true)).to eq(2)
+    end
+  end
 end

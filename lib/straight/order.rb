@@ -139,9 +139,9 @@ module Straight
 
         status =
           if amount_paid > 0
-            if ((amount == 0) || (amount > 0 && amount_paid >= amount)) && status_unconfirmed?(uniq_transactions)
+            if (gateway.donation_mode || (amount == 0) || (amount > 0 && amount_paid >= amount)) && status_unconfirmed?(uniq_transactions)
               STATUSES.fetch(:unconfirmed)
-            elsif (amount == 0) || (amount > 0 && amount_paid == amount)
+            elsif gateway.donation_mode || (amount == 0) || (amount > 0 && amount_paid == amount)
               STATUSES.fetch(:paid)
             elsif amount_paid < amount
               STATUSES.fetch(:partially_paid)
