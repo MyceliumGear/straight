@@ -1,6 +1,6 @@
 module Straight
   module Blockchain
-    
+
     class InsightAdapter < Adapter
 
       def self.support_mainnet?
@@ -67,15 +67,20 @@ module Straight
         vouts.each do |o|
           total_amount += Satoshi.new(o["value"]) if address.nil? || address == o["scriptPubKey"]["addresses"].first
         end
-        confirmations = transaction["confirmations"] 
+        confirmations = transaction["confirmations"]
         outs = vouts.map { |o| {amount: Satoshi.new(o["value"]).to_i, receiving_address: o["scriptPubKey"]["addresses"].first} }
-        block = api_request("/block/", transaction['blockhash'])
+
+        block_height = transaction['blockheight']
+        if block_height.to_s.empty? && !transaction['blockhash'].to_s.empty?
+          block = api_request('/block/', transaction['blockhash'])
+          block_height = block['height']
+        end
 
         {
           tid:           tid,
           total_amount:  total_amount,
           confirmations: confirmations || 0,
-          block_height:  block['height'],
+          block_height:  block_height,
           outs:          outs || [],
           meta: {
             fetched_via: self,
