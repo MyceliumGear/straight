@@ -8,7 +8,7 @@ module Straight
     class AdaptersTimeoutError < TimeoutError; end
     class AdaptersError < StraightError; end
 
-    TIMEOUT = 60
+    TIMEOUT = 8
     attr_reader :adapters, :result, :defer_result, :tasks_parallel_limit
 
     def initialize(adapters, tasks_parallel_limit: 2, &block)
