@@ -28,7 +28,7 @@ How it works
 2. Create an "account" and export its root extended public key (looks like xpub572b9e85...).
 3. Install Straight via Gemfile into your Ruby application.
 4. Create new Gateway with `Straight::Gateway.new`, set its properties.
-5. Start creating bitcoin orders by calling `gateway.order_for_keychain_id(...)``
+5. Start creating bitcoin orders by calling `gateway.new_order(...)``
 6. Set callbacks to get notified when payment is confirmed.
 7. Your wallet automatically detects incoming funds. Profit!
 
@@ -74,7 +74,7 @@ Usage
     # Remember you should always use a new, unique keychain_id, should preferably
     # be consecutive.
     #
-    order = gateway.order_for_keychain_id(amount: 1, keychain_id: 1)
+    order = gateway.new_order(amount: 1, keychain_id: 1)
 
     # Start tracking the order
     #
