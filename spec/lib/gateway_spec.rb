@@ -145,6 +145,7 @@ RSpec.describe Straight::Gateway do
     it "is using testnet" do
       @gateway.test_mode = true
       allow(@mock_adapter).to receive(:testnet_adapters).and_return(true)
+      expect(@gateway.blockchain_adapters).to_not be nil
       expect(@gateway.blockchain_adapters).to eq(@gateway.test_blockchain_adapters)
     end
 
