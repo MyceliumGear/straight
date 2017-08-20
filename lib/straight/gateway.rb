@@ -78,6 +78,10 @@ module Straight
         @blockchain_adapters
       end
 
+      def test_blockchain_adapters
+        @blockchain_adapters.map{ |el| el.class.testnet_adapter rescue next }.compact
+      end
+
       # Creates a new order for the address derived from the pubkey and the keychain_id argument provided.
       # See explanation of this keychain_id argument is in the description for the AddressProvider::Base#new_address method.
       def new_order(args)
