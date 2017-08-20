@@ -144,7 +144,7 @@ module Straight
 
           transaction.outputs.each do |out|
             amount = out.value
-            receiving_address = out.script.standard_address
+            receiving_address = out.script.standard_address(network: @testnet ? BTC::Network.testnet : BTC::Network.default)
             total_amount += amount if address.nil? || address == receiving_address.to_s
             outs << {amount: amount, receiving_address: receiving_address}
           end
