@@ -37,8 +37,8 @@ module Straight
           tid
           title
         }.each do |field|
-          attr_reader field unless base.method_defined?(field)
-          attr_writer field unless base.method_defined?("#{field}=")
+          attr_reader field unless base.method_defined?(field) || (base.respond_to?(:attribute_method?) && base.attribute_method?(field))
+          attr_writer field unless base.method_defined?("#{field}=") ||  (base.respond_to?(:attribute_method?) && base.attribute_method?("#{field}="))
         end
         prepend Prependable
         include Includable
