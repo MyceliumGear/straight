@@ -2,7 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.3.6)
-    btcruby (1.0.3)
+    btcruby (1.7)
       ffi (~> 1.9, >= 1.9.3)
     builder (3.2.2)
     concurrent-ruby (0.9.1)
